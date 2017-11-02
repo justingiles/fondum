@@ -19,10 +19,9 @@ import subprocess
 from distutils import dir_util
 import sys
 
-project_path = os.path.abspath(os.path.dirname(__file__))
-if project_path not in sys.path:
-    sys.path.insert(0, project_path)
-print("project_path", project_path)
+library_path = os.path.abspath(os.path.dirname(__file__))
+if library_path not in sys.path:
+    sys.path.insert(0, library_path)
 
 import supercopy
 from supercopy import SELF_NAME, NOW
@@ -57,7 +56,7 @@ def main():
     # get the command line options
     #
     args = parser.parse_args()
-    args.script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    args.library_path = library_path
     # print("GOT IT", args.cmd, args.dir, "script=", args.script_path)
     if args.cmd=="create":
         create.create_project(args)
