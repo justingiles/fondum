@@ -61,7 +61,7 @@ def arg_smash(*arglists, force_kw=False):
 
 def compile_project(args):
     print("Compiling project {}.".format(args.dir))
-    script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    script_path = args.library_path
     source_dir = "{}/source".format(script_path)
     settings_dir = "{}/settings".format(args.dir)
     custom_dir = "{}/custom".format(args.dir)

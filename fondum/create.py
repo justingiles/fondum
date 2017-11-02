@@ -36,7 +36,7 @@ def size_split(s, n):
 def create_project(args):
 
     print ("Creating project {}.".format(args.dir))
-    script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+    script_path = args.library_path
     root_dir = args.dir
     VERBOSE = args.verbose
     starter_dir = "{}/starter".format(script_path)
