@@ -1,0 +1,4 @@
+include LICENSE README.md
+recursive-include fondum/source *
+recursive-include fondum/starter *
+global-exclude *.pyc
