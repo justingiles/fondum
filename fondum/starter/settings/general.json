@@ -1,0 +1,114 @@
+{
+    "site_title": "Number Posting for LIFE",
+    "copyright": "&copy; 1952 John Doe; number lover, time traveler.",
+    "rights": "MIT License.",
+    "index_def": "page_numbers_top",
+    "color": {
+        "menu-text": "black",
+        "menu-background": "gold",
+        "footer-text": "black",
+        "footer-background": "gold",
+        "body-text": "white",
+        "body-background": "slateblue",
+        "a-link": "linen",
+        "a-visited": "beige",
+        "a-hover": "linen",
+        "a-active": "linen"
+    },
+    "table_color": {
+        "menu-text": "black",
+        "menu-background": "ivory",
+        "body-text": "gray",
+        "body-background": "ivory",
+        "a-link": "DarkSlateBlue",
+        "a-visited": "DarkSlateGray",
+        "a-hover": "DarkSlateBlue",
+        "a-active": "DarkSlateBlue"
+    },
+    "size": {
+        "menu-text": "14px",
+        "footer-text": "12px"
+    },
+    "menus_left": [
+        {
+            "type": "drop",
+            "title": "About",
+            "submenus": [
+                {
+                    "type": "link",
+                    "title": "All About Numbers",
+                    "url": "/numbers/about/"
+                }
+            ]
+        },
+        {
+            "type": "drop",
+            "title": "Numbers",
+            "submenus": [
+                {
+                    "type": "link",
+                    "title": "Top Numbers",
+                    "url": "/numbers/top/"
+                },
+                {
+                    "type": "link",
+                    "title": "Find A Number",
+                    "url": "/numbers/search/"
+                },
+                {
+                    "type": "link",
+                    "title": "Enter New Number",
+                    "url": "/numbers/post/"
+                }
+            ]
+        }
+    ],
+    "menus_right": [
+        {
+            "type": "link",
+            "title": "Number Store",
+            "url": "/company/store/"
+        },
+        {
+            "type": "login",
+            "submenus": [
+                {
+                    "type": "link",
+                    "title": "Create New NumberLife Account",
+                    "url": "/account/new/",
+                    "logged_in": false
+                },
+                {
+                    "type": "link",
+                    "title": "Login to NumberLife",
+                    "url": "/account/login/",
+                    "logged_in": false
+                },
+                {
+                    "type": "link",
+                    "title": "My Numbers",
+                    "url": "/account/numbers/me",
+                    "logged_in": true
+                },
+                {
+                    "type": "link",
+                    "title": "Logout",
+                    "url": "/logout/",
+                    "logged_in": true
+                }
+            ]
+        }
+    ],
+    "footer_links_left": [
+        {
+            "title": "About Us",
+            "url": "/company/about/"
+        }
+    ],
+    "footer_links_right": [
+        {
+            "title": "GitHub",
+            "url": "www.github.com/X"
+        }
+    ]
+}

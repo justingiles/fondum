@@ -1,0 +1,453 @@
+<html>
+ <head>
+  <title>{{g.s["site_title"]}}</title>
+  <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
+  {% if g.s["font"].external %}
+  <link rel="stylesheet" href="{{g.s["font"].external}}">
+  {% endif %}
+  <style>
+.header-left {
+  margin-right: 16px;
+  float: left;
+  position: relative;
+  display: inline-block;
+}
+.header-right {
+  margin-left: 16px;
+  float: right;
+  position: relative;
+  display: inline-block;
+}
+.header-center {
+  margin: 0 auto;
+  text-align: center;
+}
+.navbtn {
+  background-color: {{g.s["color"]["menu-background"]}};
+  color: {{g.s["color"]["menu-text"]}};
+  border: none;
+  cursor: pointer;
+  font-family: {{g.s['font']['body-text']}};
+  font-size: {{g.s['size']['menu-text']}};
+  font-weight: 600;
+}
+a.navsub:link {
+  color: {{g.s["color"]["menu-text"]}};
+}
+a.navsub:visited  {
+  color: {{g.s["color"]["menu-text"]}};
+}
+a.navsub:hover {
+  color: {{g.s["color"]["menu-text"]}};
+}
+a.navsub:active {
+  color: {{g.s["color"]["menu-text"]}};
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: {{g.s["color"]["menu-background"]}};
+  min-width: 280px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+.dropdown-content a {
+  color: {{g.s["color"]["menu-text"]}};
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+img {
+  max-width: 100%;
+}
+textarea {
+  width: 100%;
+  height: 400px;
+}
+{% if page and page.has_tables %}
+.table-row a:link {
+  color: {{g.s["table_color"]["a-link"]}};
+}
+.table-row a:visited {
+  color: {{g.s["table_color"]["a-visited"]}};
+}
+.table-row a:hover {
+  color: {{g.s["table_color"]["a-hover"]}};
+}
+.table-row a:active {
+  color: {{g.s["table_color"]["a-active"]}};
+}
+{% endif %}
+
+{% if page and page.has_catalog %}
+div.pr-wrap {
+  float: left;
+  padding: 10px;
+  width: {{((972/page.catalog.columns)-28) | int}}px;
+  {% if page.catalog.pic_position in [page.Left, page.Right] %}
+  height: 180px;
+  {% else %}
+  height: 280px;
+  {% endif %}
+}
+div.pr-inner {
+  {% if page.catalog.pic_position in [page.Left, page.Right] %}
+  height: 160px;
+  {% else %}
+  height: 260px;
+  {% endif %}
+  color: {{g.s["product_color"]["body-text"]}};
+  background-color: {{g.s["product_color"]["body-background"]}};
+  padding: 5px;
+}
+div.pr-text {
+  {% if page.catalog.pic_position in [page.Left, page.Right] %}
+  width: {{(((972/page.catalog.columns)-28-28)*0.4) | int}}px;
+  height: 150px;
+  {% else %}
+  height: 250px;
+  {% endif %}
+  position: relative;
+  display: inline-block;
+  float: left;
+}
+{% if page.catalog.pic_position in [page.Left, page.Right] %}
+div.pr-pic{
+  {% if page.catalog.pic_position == page.Left %}
+  float: left;
+  margin-right: 14px;
+  {% else %}
+  float: right;
+  margin-left: 14px;
+  {% endif %}
+  position: relative;
+  display: inline-block;
+}
+{% endif %}
+img.pr-img {
+  {% if page.catalog.pic_position in [page.Left, page.Right] %}
+  max-width: {{(((972/page.catalog.columns)-28-28)*0.4) | int}}px;
+  max-height: 150px;
+  {% else %}
+  max-width: {{((972/page.catalog.columns)-28-28) | int}}px;
+  max-height: 150px;
+  {% endif %}
+}
+a.pr-href {
+  text-decoration: none;
+}
+{% endif %}
+a:link {
+  color: {{g.s["color"]["a-link"]}};
+}
+a:visited {
+  color: {{g.s["color"]["a-visited"]}};
+}
+a:hover {
+  color: {{g.s["color"]["a-hover"]}};
+}
+a:active {
+  color: {{g.s["color"]["a-active"]}};
+}
+.message {
+  color: white;
+  background-color: darkblue;
+}
+.success {
+  color: white;
+  background-color: green;
+}
+.info {
+  color: white;
+  background-color: aqua;
+}
+.warning {
+  color: white;
+  background-color: yellow;
+}
+.danger {
+  color: white;
+  background-color: darkred;
+}
+
+.formlist {
+  border:1px solid #000;
+  padding:10px;
+  margin:10px;
+  list-style-type: none;
+}
+
+label {
+  width:80%;
+}
+
+input, select {
+  width:100%;
+}
+
+.autowidth {
+  width:auto;
+}
+
+li {
+  padding-left:5px;
+}
+
+dt:after {
+  content:':';
+}
+
+dl  {
+    margin: 0px;
+    padding: 10px;
+    overflow: auto;
+}
+
+dt  {
+   display: inline-block;
+   width: 35%;
+   text-align: right;
+   font-weight: bold;
+}
+
+dd {
+   width: 56%;
+   display: inline-block;
+   padding: 10px 0px 10px 0px;
+}
+
+table {  
+    color: #333; /* Lighten up font color */
+    font-family: {{g.s['font']['body-text']}}; /* Nicer font */
+    width: 100%; 
+    border-collapse: 
+    collapse; border-spacing: 0; 
+}
+
+td, th { border: 1px solid #CCC; height: 30px; } /* Make cells a bit taller */
+
+th {  
+    background: #F3F3F3; /* Light grey background */
+    font-weight: bold; /* Make sure they're bold */
+}
+
+td {  
+    background: #FAFAFA; /* Lighter grey background */
+    text-align: center; /* Center our text */
+}
+a.btn {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+}
+
+   @media (min-width: 1200px) { 
+    .page-size {
+      max-width: 1012px;
+    }
+    .content-size {
+      max-width: 972;
+    }
+    .msgbox {
+     overflow: hidden;
+     transition: 1.8s;
+     border: 1px solid;
+     height: 50px;
+     display: inline-block;
+     margin: 0px 20px 10px 20px;
+     padding: 10px;
+    }
+   }
+   @media (max-width: 1199px) { 
+    .page-size {
+      min-width: 320px;
+    }
+    .content-size {
+      min-width: 318px;
+    }
+    .msgbox {
+     overflow: hidden;
+     transition: 1.8s;
+     border: 1px solid;
+     height: 50px;
+     display: inline-block;
+     margin: 0px 20px 10px 20px;
+     padding: 10px;
+    }
+   }
+  </style>
+  {% block header %}{% endblock %}
+ </head>
+ <body style="font-family: {{g.s['font']['body-text']}}; margin: 0; box-sizing: border-box; background-color: {{g.s['color']['body-background']}}; color: {{g.s['color']['body-text']}};" onload="setTimeout(hide_flash_boxes, 5000)">
+  <!-- what follows is the header format -->
+  <div style="display: block; position: relative; font-size: {{g.s['size']['menu-text']}}; font-weight: 600; font-family: {{g.s['font']['menu-text']}}">
+   <div style="z-index: 1; padding-top: 12px; padding-bottom: 12px; color: rgba(255,255,255,0.75); background-color: {{g.s["color"]["menu-background"]}};">
+    <div class="page-size" style="padding-right: 16px; padding-left: 16px; margin-right: auto; margin-left: auto; box-sizing: border-box; min-height: 30px;">
+     <div style="justify-content: space-between; line-height: 28px; vertical-align: middle">
+      <div class="header-left">
+       <a href="/" style="color: {{g.s["color"]["menu-text"]}}; text-decoration: none">
+        {{g.nav_icon | safe}}
+       </a>
+      </div>
+      {% for div in g.s["menus_left"] %}
+       {% if div["type"] == "drop" %}
+      <div class="header-left">
+        <button onclick="drophandler('dropleft_{{loop.index}}')" class="navbtn">{{div["title"]}}</button>
+        <div id="dropleft_{{loop.index}}" class="dropdown-content">
+         {% for submenu in div["submenus"] %}
+         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
+         {% endfor %}
+        </div>
+      </div>
+       {% else %}
+      <div class="header-left">
+       <a href="{{div['url']}}">
+        <button class="navbtn">{{div["title"]}}</button>
+       </a>
+      </div>
+       {% endif %}
+      {% endfor %}
+      {% for div in g.s["menus_right"] | reverse %}
+       {% if div["type"] == "drop" %}
+      <div class="header-right">
+        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{div["title"]}}</button>
+        <div id="dropright_{{loop.index}}" class="dropdown-content">
+         {% for submenu in div["submenus"] %}
+         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
+         {% endfor %}
+        </div>
+      </div>
+       {% elif div["type"] == "login" %}
+        {% if g.user.is_authenticated %}
+      <div class="header-right">
+        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{g.display_name|safe}}</button>
+        <div id="dropright_{{loop.index}}" class="dropdown-content">
+         {% for submenu in div["submenus"] if submenu.logged_in==True %}
+         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
+         {% endfor %}
+        </div>
+      </div>
+        {% else %}
+      <div class="header-right">
+        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{g.display_name|safe}}</button>
+        <div id="dropright_{{loop.index}}" class="dropdown-content">
+         {% for submenu in div["submenus"] if submenu.logged_in==False %}
+         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
+         {% endfor %}
+        </div>
+      </div>
+        {% endif %}
+       {% else %}
+      <div class="header-right">
+       <a href="{{div['url']}}">
+        <button class="navbtn">{{div["title"]}}</button>
+       </a>
+      </div>
+       {% endif %}
+      {% endfor %}
+      <div style="clear: both;"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="content-size" style="margin-right: auto; margin-left: auto;">
+
+   {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+    <div class="msgbox {{category}}">
+    {{category|category_icon|safe}}<br />
+    {{message|safe}}
+    </div>
+    {% endfor %}
+   {% endwith %}
+
+
+   {% block body %}{% endblock %}
+
+  </div>
+
+  <div>
+   <hr>
+   <div class="content-size" style="margin-right: auto; margin-left: auto; font-size: {{g.s['size']['footer-text']}}; color: {{g.s["color"]["footer-text"]}}">
+    <div style="justify-content: space-between; line-height: 28px; vertical-align: middle">
+        {% for div in g.s["footer_links_left"] %}
+        <div class="header-left">
+         <a href="{{div['url']}}" style="color: {{g.s["color"]["footer-text"]}}; text-decoration: none">
+         {{div["title"]}}
+         </a>
+        </div>
+        {% endfor %}
+        {% for div in g.s["footer_links_right"] | reverse %}
+        <div class="header-right">
+         <a href="{{div['url']}}" style="color: {{g.s["color"]["footer-text"]}}; text-decoration: none">
+         {{div["title"]}}
+         </a>
+        </div>
+        {% endfor %}
+        <div class="header-center">
+         <a href="/" style="color: {{g.s["color"]["footer-text"]}}; text-decoration: none">
+         {{g.nav_icon | safe}}
+         </a>
+        </div>
+        <div style="clear: both;">
+        </div>
+    </div>
+   <p>
+    {{g.s["copyright"]|safe}}
+    {{g.s["rights"]|safe}}
+   </p>
+   </div>
+  </div>
+
+
+  {% block footer %}{% endblock %}
+
+  <script>
+    /* When the user clicks on the button, 
+    toggle between hiding and showing the dropdown content */
+    function drophandler(target) {
+        e = document.getElementById(target)
+        if (e.style.display=='block') {
+          e.style.display = 'none'
+        } else {
+          hide_all_nav_menus();
+          e.style.display = 'block';
+        };
+    };
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.navbtn')) {
+        hide_all_nav_menus();
+      }
+    };
+
+    function hide_all_nav_menus() {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.style.display=='block') {
+          openDropdown.style.display = 'none';
+        }
+      }
+    };
+
+    function hide_flash_boxes() {
+      var boxes = document.getElementsByClassName('msgbox');
+      var i;
+      for (i = 0; i < boxes.length; i++) {
+        var box = boxes[i];
+        box.style.height = 0;
+        box.style.padding = 0;
+        box.style.border = "none";
+      };
+    };
+
+  </script>
+ </body>
+</html>

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block header %}
+
+<script src='/static/js/pdfmake.min.js'></script>
+<script src='/static/js/vfs_fonts.js'></script>
+
+{% endblock %}
+
+{% block body %}
+
+<h2>Trophy <b>{{trophy.s_name}}</b></h2>
+
+<p>
+
+<ul>
+    <li>name: {{trophy.s_name or "[not yet named]"}}</li>
+    <li>creator: <a href="/player-trophies/{{trophy.ref_creator.s_name}}">{{trophy.ref_creator.s_name}}</a></li>
+    <li>owner: <a href="/player-trophies/{{trophy.ref_owner.s_name}}">{{trophy.ref_owner.s_name}}</a></li>
+</ul>
+
+<h3>QR Code</h3>
+
+<img src="/qrcode/{{trophy.s_trophy_id}}.png" />
+
+<p><button onclick="download_pdf();">Download as PDF</button></p>
+
+<h3>Pictures</h3>
+
+{% for pic in trophy.arr_pictures %}
+<img src="{{pic.s_url}}" style="width:304px;height:228px;" />
+<br/>
+  {{pic.dt_created}}
+<br/>
+{% else %}
+<i>no pictures yet</i>
+<br/>
+{% endfor %}
+
+Upload a new picture:
+
+<form method="POST" enctype="multipart/form-data" action="/upload-pic">
+    {{ form.csrf_token }}
+    {{ form.example }}
+    <input type="hidden" name="trophy_id" value="{{trophy.s_trophy_id}}">
+    <input type="submit" value="Upload">
+</form>
+
+{% endblock %}
+
+{% block footer %}
+
+<script>
+function download_pdf() {
+    var docDefinition = {
+        pageSize: 'LETTER',
+        pageMargins: 36,
+        content: [
+            'Trophy {{trophy.s_name}}',
+            '2in QR Code:',
+            {
+                image: 'thisQRCode',
+                width: 144,
+                height: 144
+            },
+            '16mm QR Code:',
+            {
+                image: 'thisQRCode',
+                width: 45,
+                height: 45
+            },
+            '12mm QR Code:',
+            {
+                image: 'thisQRCode',
+                width: 34,
+                height: 34
+            },
+        ],
+        images: {
+            thisQRCode: '{{qrData}}'
+        }
+    };
+    pdfMake.createPdf(docDefinition).download('bhf-trophy-{{trophy.s_trophy_id}}.pdf');
+};
+</script>
+
+{% endblock %}

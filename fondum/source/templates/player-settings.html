@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h2>Player Settings</h2>
+
+Current name = {{g.user.s_name}}
+
+<p>
+
+<form action="" method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    {% with adjs, nouns, numbers = g.user.get_word_lists() %}
+    <select name="adj">
+        {% for word in adjs %}
+        <option value="{{word}}" {{"selected" if word==g.user.s_name_adj}}>{{word}}</option>
+        {% endfor %}
+    </select>
+    <p>
+    <select name="noun">
+        {% for word in nouns %}
+        <option value="{{word}}" {{"selected" if word==g.user.s_name_noun}}>{{word}}</option>
+        {% endfor %}
+    </select>
+    <p>
+    <select name="number">
+        {% for word in numbers %}
+        <option value="{{word}}" {{"selected" if word==g.user.s_name_number}}>{{word}}</option>
+        {% endfor %}
+    </select>
+    {% endwith %}
+    <p>
+    <input type="submit" value="Change Name">
+</form>
+
+{% endblock %}

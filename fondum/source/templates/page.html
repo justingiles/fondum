@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% macro render_radio_field(field) -%}
+  <li>
+    <p>
+        <label for="{{field.short_name}}">{{ field.label }}</label>
+    </p>
+    <p>
+      {% for value, label, _ in field.iter_choices() %}
+        <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"> {{ label }}
+        <br />
+      {% endfor %}
+    </p>
+    {% for error in field.errors %}
+    <p>
+        <span style="color: red;">{{ error }} </span>
+    </p>
+    {% endfor %}
+  </li>
+{%- endmacro %}
+
+{% block body %}
+
+<p>
+    <div class="creole">
+        {{html|safe}}
+    </div>
+</p>
+
+{% if page.wtf %}
+  {% if page.wtf.process_form %}
+<br />
+<div>
+    <form action="" enctype="multipart/form-data" method="POST">
+        <ul class="formlist">
+            {% for field in page.wtf %}
+              {% if field.type == "HiddenField" %}
+            {{ field }}
+              {% elif field.type == "CSRFTokenField" %}
+            {{ field }}
+              {% elif field.type == "SubmitField" %}
+            <li>
+                <button type="submit">{{field.label.text}}</button>
+            </li>
+              {% elif field.type == "DisplayTextField" %}
+            <li>
+                <p>
+                    <label for="{{field.short_name}}">{{ field.label }}</label>
+                </p>
+                <p>
+                    <b>{{ field.data }}</b>
+                </p>
+            </li>
+              {% elif field.type == "ButtonUrlField" %}
+                {% if field.data %}
+                  {% if field.href %}
+            <li>
+                <a href="{{field.href}}" class="btn">{{ field.data }}</a>
+            </li>
+                  {% else %}
+            <li>
+                <b>{{ field.data }}</b>
+            </li>
+                  {% endif %}
+                {% endif %}
+              {% elif field.type == "RadioField" %}
+                {{ render_radio_field(field) }}
+              {% else %}
+            <li>
+                <p>
+                    <label for="{{field.short_name}}">{{ field.label }}</label>
+                </p>
+                <p>
+                    {{ field }}
+                </p>
+                {% for error in field.errors %}
+                <p>
+                    <span style="color: red;">{{ error }} </span>
+                </p>
+                {% endfor %}
+            </li>
+              {% endif %}
+            {% endfor %}
+        </ul>
+    </form>
+</div>
+  {% else %}
+<div style="width: 100%;">
+    <dl>
+     {% for field in page.wtf %}
+      {% if field.type == "HiddenField" %}
+      {% elif field.type == "CSRFTokenField" %}
+      {% elif field.type == "ButtonUrlField" %}
+        {% if field.data %}
+          {% if field.href %}
+        <dt>
+            {{ field.label.text }}
+        </dt>
+        <dd>
+          <a href="{{field.href}}" class="btn">{{ field.data }}</a>
+        </dd>
+          {% else %}
+        <dt>
+            {{ field.label.text }}
+        </dt>
+        <dd>
+          {{ field.data }}
+        </dd>
+          {% endif %}
+        {% endif %}
+      {% elif field.type == "DisplayPictureField" %}
+        <dt>
+            {{ field.label.text }}
+        </dt>
+        <dd>
+            <img src="{{ field.url }}" />
+        </dd>
+      {% else %}
+        <dt>
+            {{ field.label.text }}
+        </dt>
+        <dd>
+            {{ field.data | safe }}
+        </dd>
+      {% endif %}
+     {% endfor %}
+    </dl>
+</div>
+  {% endif %}
+{% endif %}
+
+
+{% if page.has_tables %}
+<ul style="list-style: none; padding: 0; margin: 0;">
+{% for table in page.tables %}
+    <li style="display: inline; border: solid; border-width: 1px 1px 0 1px; margin: 0 5px 0 0; {{'font-weight: bold;' if table.key_name==page.display_table.key_name }}">
+        {% if table.key_name==page.display_table.key_name %}
+        {% else %}
+          {% if page.display_table.key_name == page.default_table_name %}
+            {% if table.key_name!=page.default_table_name %}
+            <a href="./{{table.key_name}}" style="padding: 0 10px;">
+            {% else %}
+            <a href="." style="padding: 0 10px;">
+            {% endif %}
+          {% else %}
+            {% if table.key_name!=page.default_table_name %}
+            <a href="../{{table.key_name}}" style="padding: 0 10px;">
+            {% else %}
+            <a href=".." style="padding: 0 10px;">
+            {% endif %}
+          {% endif %}
+        {% endif %}
+            <span class="table-header">{{table.table_name}}</span>
+        {% if table.key_name!=page.display_table.key_name %}
+        </a>
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>
+<div style="border-top: 1px solid;">
+    <table>
+        {% if page.display_table.header %}
+        <tr>
+            {% for header_item in page.display_table.header.display_items() %}
+            <th>{{header_item.label}}</th>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% if page.skip_table_body %}
+        <tr></tr>
+        {% else %}
+          {% for row in page.display_table.rows %}
+        <tr class="table-row">
+            {% for item in row.display_items() %}
+            <td>
+                {{ ('<a href={}>'.format(item.url) if item.url) | safe }}
+                {% if item.type == "DateField" %}
+                {{ item.data | datefmt }}
+                {% elif item.type == "ButtonUrlField" %}
+                  {% if item.href %}
+                <a href="{{item.href}}" class="btn">{{ item.data }}</a>
+                  {% else %}
+                {{ item.data }}
+                  {% endif %}
+                {% else %}
+                  {% if item.safe %}
+                {{ item.data | safe }}
+                  {% else %}
+                {{ item.data }}
+                  {% endif %}
+                {% endif %}
+                {{ ('</a>' if item.url) | safe }}
+            </td>
+            {% endfor %}
+        </tr>
+          {% else %}
+        <tr><td colspan="100"><i>empty</i></td></tr>
+          {% endfor %}
+        {% endif %}
+    </table>
+</div>
+{% endif %}
+
+{% if page.has_catalog %}
+  {% for prow in page.catalog.products | batch(page.catalog.columns) %}
+    {% for p in prow %}
+<div class="pr-wrap">
+    <div class="pr-inner" {{('style="border-right: 0px;"' if loop.last) | safe}}>
+        {% if p.s_url %}
+        <a href="{{p.s_url|safe}}" class="pr-href">
+        {% endif %}
+            {% if page.catalog.show_img and page.catalog.pic_position == page.Top %}
+              {% if p.s_img_key %}
+            <img src="/apic/{{p.s_img_key}}.png" class="pr-img">
+              {% else %}
+            <img src="/static/img/missing-image.svg" class="pr-img">
+              {% endif %}
+            <br/>
+            {% endif %}
+            {% if page.catalog.show_img and page.catalog.pic_position in [page.Left, page.Right] %}
+            <div class="pr-pic">
+                {% if p.s_img_key %}
+                <img src="/apic/{{p.s_img_key}}.png" class="pr-img">
+                {% else %}
+                <img src="/static/img/missing-image.svg" class="pr-img">
+                {% endif %}            
+            </div>
+            {% endif %}
+            <div class="pr-text">
+                <b>{{p.s_title}}</b>
+                <br/>
+                {% if page.catalog.show_made_by %}
+                <small><i>by {{p.s_made_by}}</i></small>
+                <br/>
+                {% endif %}
+                {% if page.catalog.show_date %}
+                <small>{{p.dt_publish_date|datefmt}}</small>
+                <br/>
+                {% endif %}
+                {% if page.catalog.show_price %}
+                {{p.fl_price|USD}}
+                <br/>
+                {% endif %}
+                {% if page.catalog.show_shipping_detail %}
+                {{p.s_shipping_detail}}
+                <br/>
+                {% endif %}
+                {% if page.catalog.show_short_description %}
+                {{p.s_short_description|creole_top|safe}}
+                <br/>
+                {% endif %}
+                {% if page.catalog.show_img and page.catalog.pic_position == page.Bottom %}
+                  {% if p.s_img_key %}
+                <img src="/apic/{{p.s_img_key}}.png" class="pr-img">
+                  {% else %}
+                <img src="/static/img/missing-image.svg" class="pr-img">
+                  {% endif %}
+                <br/>
+                {% endif %}
+            </div>
+        {% if p.s_url %}
+        </a>
+        {% endif %}
+    </div>
+</div>
+      {% if loop.last %}
+<br style="clear:both" />
+      {% endif %}
+    {% endfor %}
+  {% else %}
+<i>no products listed</i>
+  {% endfor %}
+<br style="clear:both" />
+{% endif %}
+
+{% endblock %}
