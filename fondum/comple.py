@@ -6,10 +6,11 @@ from distutils import dir_util
 import json
 import pathlib
 import re
+import subprocess
 
 import supercopy
 from supercopy import SELF_NAME, NOW
-from supercopy import tabbed_text
+from supercopy import tabbed_text, size_split
 
 
 def string_before(s, last):
@@ -59,63 +60,97 @@ def arg_smash(*arglists, force_kw=False):
     return "{}".format(smash)
 
 
+def cmdline(command):
+    process = subprocess.Popen(
+        args=command,
+        stdout=subprocess.PIPE,
+        shell=True
+    )
+    raw_text = process.communicate()[0].decode("utf-8") 
+    return raw_text.split("\n")
+
+
 def compile_project(args):
     print("Compiling project {}.".format(args.dir))
-    script_path = args.library_path
-    source_dir = "{}/source".format(script_path)
+    source_dir = "{}/source".format(args.library_path)
+    starter_docker_dir = "{}/starter_docker".format(args.library_path)
     settings_dir = "{}/settings".format(args.dir)
     custom_dir = "{}/custom".format(args.dir)
-    destination_dir = "{}/site".format(args.dir)
+    orig_path = os.getcwd()
 
     if args.verbose:
-        verbose = True
+        VERBOSE = True
     else:
-        verbose = False
-
-    # delete original site directory
-    if args.passive:
-        if verbose:
-            print("01 running passive; so skipping fresh 'site' directory deletion")
-    else:
-        if verbose:
-            print("01 deleting site subdirectory if needed.")
-        if os.path.exists(destination_dir):
-            dir_util.remove_tree(destination_dir, verbose=verbose)
+        VERBOSE = False
 
     # reading/rendering settings files
     settings_files = os.listdir(settings_dir)
-    if verbose:
-        print("02 reading JSON settings files..")
+    if VERBOSE:
+        print("c01 reading JSON settings files..")
     stg = {}
     for filename in settings_files:
         if filename.endswith(".json"):
-            if verbose:
+            if VERBOSE:
                 print("   > parsing {}".format(filename))
             base = os.path.basename(filename)
             category = os.path.splitext(base)[0]
             with open("{}/{}".format(settings_dir, filename)) as f:
                 stg[category] = json.load(f)
                 # print(stg)
+    if "docker" not in stg:
+        print("   ERROR: {}/docker.json file was missing!".format(settings_dir))
+        ImportError("general settings file(s) missing")
+    if "target" not in stg["docker"]:
+        print("   ERROR: docker.json missing 'target'!".format(settings_dir))
+        ImportError("json entry missing")
+    docker_name = "docker_{}".format(stg["docker"]['target'])
+    destination_dir = "{}/site_{}".format(docker_name, args.dir)
+
+    #
+    if VERBOSE:
+        print("c02 prepping docker destination ({} for {})".format(docker_name, stg["docker"]['target']))
+    if not os.path.exists(docker_name):
+        if VERBOSE:
+            print('    > creating the docker directory and git repo.')
+        os.makedirs(docker_name)
+        dir_util.copy_tree(starter_docker_dir, docker_name)
+        os.chdir(docker_name)
+        result = cmdline('git init')
+        if VERBOSE:
+            print(tabbed_text(result))
+        os.chdir(orig_path)
+
+ 
+    # delete original site directory
+    if args.passive:
+        if VERBOSE:
+            print("c02b running passive; so skipping fresh 'site' directory deletion")
+    else:
+        if VERBOSE:
+            print("c02b deleting site subdirectory in docker if needed.")
+        if os.path.exists(destination_dir):
+            dir_util.remove_tree(destination_dir, verbose=VERBOSE)
+
 
     # move source files
     #
     source_files = os.listdir(source_dir)
-    if verbose:
-        print("03 moving fixed source files to correct location.")
-    supercopy.copy_dir(source_dir, destination_dir, verbose=verbose)
+    if VERBOSE:
+        print("c03 moving fixed source files to correct location.")
+    supercopy.copy_dir(source_dir, destination_dir, verbose=VERBOSE)
 
     # move key settings file(s)
     #
-    if verbose:
-        print("04 moving flask-settings.py file to correct location.")
+    if VERBOSE:
+        print("c04 moving flask-settings.py file to correct location.")
     # shutil.copy("{}/flask-settings.py".format(settings_dir), destination_dir)
-    supercopy.copy_file("flask-settings.py", settings_dir, destination_dir, verbose=verbose)
+    supercopy.copy_file("flask-settings.py", settings_dir, destination_dir, verbose=VERBOSE)
 
     # move custom files
     #
-    if verbose:
-        print("05 moving custom files to correct location.")
-    supercopy.copy_dir(custom_dir, destination_dir, verbose=verbose)
+    if VERBOSE:
+        print("c05 moving custom files to correct location.")
+    supercopy.copy_dir(custom_dir, destination_dir, verbose=VERBOSE)
     custom_files = [fn.rsplit(".", 1)[0] for fn in os.listdir(custom_dir) if fn.endswith(".py")]
     #
     # combined model
@@ -124,7 +159,7 @@ def compile_project(args):
         "import {}".format(fn) for fn in custom_files if fn.endswith("__models")
     ]
     model_import_text = "\n".join(model_lines)
-    if verbose:
+    if VERBOSE:
         print("06A compiling models references.")
         print(tabbed_text(model_lines, 4))
     #
@@ -134,19 +169,19 @@ def compile_project(args):
         "import {}".format(fn) for fn in custom_files if fn.endswith("__database")
     ]
     database_import_text = "\n".join(database_lines)
-    if verbose:
-        print("06B compiling database references.")
+    if VERBOSE:
+        print("c06B compiling database references.")
         print(tabbed_text(database_lines, 4))
     #
     # pages
     #
-    if verbose:
-        print("06C compiling Page references.")
+    if VERBOSE:
+        print("c06C compiling Page references.")
     page_files = [fn.rsplit(".", 1)[0] for fn in os.listdir(destination_dir) if fn.endswith("__pages.py")]
     page_lines = [
         "import {}".format(fn) for fn in page_files
     ]
-    if verbose:
+    if VERBOSE:
         print(tabbed_text(page_lines, 4))
     page_views_text = "\n".join(page_lines)
     page_views_text += "\n\n"
@@ -198,13 +233,13 @@ def compile_project(args):
             page_views_text += "    return {}({})\n".format(def_name, arg_smash(page_parms, ["TABLE_NAME=TABLE_NAME"]))
             page_views_text += "\n\n"
             #
-            if verbose:
+            if VERBOSE:
                 print("    > parsed route {}".format(url))
     #
     # index
     #
-    if verbose:
-        print("06D compiling index.")
+    if VERBOSE:
+        print("c06D compiling index.")
     index_def = stg["general"]["index_def"]
     index_view_text = ""
     index_view_text += "@app.route('/', methods=['GET'])\n"
@@ -216,22 +251,22 @@ def compile_project(args):
     #
     # combined views
     #
-    if verbose:
-        print("07 compiling combined views.py file.")
+    if VERBOSE:
+        print("c07 compiling combined views.py file.")
 
     views_lines = [
         "from {} import *".format(fn) for fn in custom_files if fn.endswith("__views")
     ]
     import_text = "\n".join(views_lines)
-    if verbose:
+    if VERBOSE:
         print(tabbed_text(views_lines, 4))
     import_text += "\n\n\n"
     import_text += page_views_text
-    if verbose:
+    if VERBOSE:
         print("    > added parsed routes from queries")
     import_text += "\n\n"
     import_text += index_view_text
-    if verbose:
+    if VERBOSE:
         print("    > added index route")
     source = "{}/{}".format(destination_dir, "views.py")
     source_text = pathlib.Path(source).read_text()
@@ -243,11 +278,11 @@ def compile_project(args):
     # compiling key files
     #
     settings_files = os.listdir(settings_dir)
-    if verbose:
-        print("08 compiling key files..")
+    if VERBOSE:
+        print("c08 compiling key files..")
     if "general" in stg:
         with open("{}/jcfs_settings.py".format(destination_dir), "w") as pfile:
-            if verbose:
+            if VERBOSE:
                 print('   > writing "jcfs_settings.py" file')
                 pfile.write("# DO NOT EDIT. This file was autogenerated by the jcfs compile function.\n")
             pfile.write(supercopy.pretty_dictionary(stg[category], "s"))
@@ -258,7 +293,7 @@ def compile_project(args):
         ImportError("general settings file(s) missing")
 
 
-    if verbose:
-        print("09 done.")
+    if VERBOSE:
+        print("c09 done with compile.")
 
 # eof

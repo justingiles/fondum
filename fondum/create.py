@@ -6,7 +6,7 @@ import sys
 
 import supercopy
 from supercopy import SELF_NAME, NOW
-from supercopy import tabbed_text
+from supercopy import tabbed_text, size_split
 
 import comple
 
@@ -25,27 +25,19 @@ def cmdline(command):
     raw_text = process.communicate()[0].decode("utf-8") 
     return raw_text.split("\n")
 
-def size_split(s, n):
-    def _f(s, n):
-        while s:
-            yield s[:n]
-            s = s[n:]
-    return list(_f(s, n))
-
 
 def create_project(args):
 
     print ("Creating project {}.".format(args.dir))
-    script_path = args.library_path
     root_dir = args.dir
     VERBOSE = args.verbose
-    starter_dir = "{}/starter".format(script_path)
+    starter_dir = "{}/starter_web".format(args.library_path)
     orig_path = os.getcwd()
     #
     # create the subdirecories
     #
     if VERBOSE:
-        print("1. Creating target directories.")
+        print("n1. Creating target directories.")
     if not os.path.exists(root_dir):
         if VERBOSE:
             print('    > creating the "{}" directory.'.format(root_dir))
@@ -58,39 +50,22 @@ def create_project(args):
     # generate web site
     #
     if VERBOSE:
-        print('2. runing compile.py against the new web site.')
-    # result = cmdline('python3 {}/compile.py {} --verbose'.format(script_path, root_dir))
-    # if VERBOSE:
-    #     print(tabbed_text(result))
+        print('n2. runing compiler against the new web site.')
     comple.compile_project(args)
 
-    # #
-    # # create venv
-    # #
-    # if VERBOSE:
-    #     print('3. creating virtualenv under "venv".')
-    #     print("...")
-    # os.chdir(root_dir)
-    # result = cmdline('virtualenv venv')
-    # if VERBOSE:
-    #     print(tabbed_text(result))
-    #     print("...")
-    # result = cmdline('./update_requirements.sh')
-    # if VERBOSE:
-    #     print(tabbed_text(result))
-    # os.chdir(orig_path)
-
     if VERBOSE:
-        print('4. creating GIT repo.')
+        print('n3. creating GIT repo.')
         print("...")
     os.chdir(root_dir)
     result = cmdline('git init')
     if VERBOSE:
         print(tabbed_text(result))
     os.chdir(orig_path)
-
+    #
+    # check OS environment
+    #
     if VERBOSE:
-        print('5. checking for docker and docker-compose.')
+        print('n4. checking for docker and docker-compose in OS.')
     result = cmdline('docker --version')
     if result[0] and " version " in result[0]:
         if VERBOSE:
@@ -105,3 +80,8 @@ def create_project(args):
     else:
         print("    > ERROR! - don't see docker-compose")
         exit()
+
+    if VERBOSE:
+        print('n5. done with creation of {}.'.format(args.dir))
+
+# eof

@@ -118,3 +118,12 @@ def tabbed_text(text_list, tab_size=4, width=79):
         else:
             new_list.append(line)
     return "\n".join(["{}> {}".format(t, e) for e in new_list])
+
+
+def size_split(s, n):
+    def _f(s, n):
+        while s:
+            yield s[:n]
+            s = s[n:]
+    return list(_f(s, n))
+
