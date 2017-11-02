@@ -9,12 +9,17 @@ It uses Flask, which is a tiny simple microframework. Then a large number of lib
 The following are the goals:
 
 * Make it easy to _quickly_ create a functioning web site.
-* Preemptively add a lot of functions that are not usually considered until much later as a project expands. Such as:
+* Preemptively add a lot of functions that are not usually considered until *much* later as a project expands. The important bit is that these extra functions CAN BE SAFELY IGNORED until you are ready to use them. Such as:
+   * External authentication
    * Multilingual translation and localization
    * Logging and Error Handling with integrated Flash messaging
    * Scalable image storage
    * Cloud distribution
+      * instances that handle multiple hosts, or
+      * a single host spread across multiple instances
    * Repository storage
+   * Monitization from tips, advertisements, or direct payment
+   * Usage tracking and A/B testing
 * Splits implementation roles between IT/Ops and Developer.
    * IT/Ops folks do things that are complicated obscurely technical. Changes are made from a command-line shell. For example, generating the project's files, maintaining the URL routes, distributing docker containers, etc.
    * Developers do things with creative eye and skill. Changes are made from the live web. For example, writing content and uploading pictures.
@@ -28,7 +33,7 @@ The following are the goals:
 
 ## Preparing To Use Fondum
 
-1. If not already installed, install Python 2.7+ and Python 3.5+. Details vary by OS. (Fondum uses Python 3, Flask runs under Python 2.7)
+1. If not already installed, install Python 2.7+ and Python 3.5+. Details vary by OS. If not automatically installed with Python 3, you will also need to install pip3. (Fondum uses Python 3, Flask runs under Python 2.7)
 2. If not already installed, install [GIT](https://git-scm.com/). 
 3. If not already installed, install Fondum itself system-wide.
 
