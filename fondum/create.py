@@ -1,12 +1,13 @@
 import argparse
 import os
-import subprocess
 from distutils import dir_util
 import sys
 
 import supercopy
 from supercopy import SELF_NAME, NOW
 from supercopy import tabbed_text, size_split
+from utility import cmdline
+from migration import post_dot_fondum, dot_fondum
 
 import comple
 
@@ -16,23 +17,19 @@ subdirectories_to_build = [
 ]
 
 
-def cmdline(command):
-    process = subprocess.Popen(
-        args=command,
-        stdout=subprocess.PIPE,
-        shell=True
-    )
-    raw_text = process.communicate()[0].decode("utf-8") 
-    return raw_text.split("\n")
-
-
 def create_project(args):
-
+    #
+    # first, make sure we are running from a legit root directory
+    #
+    orig_path = os.getcwd()
+    result = dot_fondum(orig_path, "root")
+    #
+    # start
+    #
     print ("Creating project {}.".format(args.dir))
     root_dir = args.dir
     VERBOSE = args.verbose
     starter_dir = "{}/starter_web".format(args.library_path)
-    orig_path = os.getcwd()
     #
     # create the subdirecories
     #
@@ -43,6 +40,7 @@ def create_project(args):
             print('    > creating the "{}" directory.'.format(root_dir))
         os.makedirs(root_dir)
         dir_util.copy_tree(starter_dir, root_dir)
+        post_dot_fondum(root_dir, {"role": "site"})
     else:
         print('    > FAIL: the "{}" directory already exists.'.format(args.dir))
         exit()

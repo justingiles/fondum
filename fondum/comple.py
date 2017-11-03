@@ -6,11 +6,12 @@ from distutils import dir_util
 import json
 import pathlib
 import re
-import subprocess
 
 import supercopy
 from supercopy import SELF_NAME, NOW
 from supercopy import tabbed_text, size_split
+from utility import cmdline
+from migration import post_dot_fondum, dot_fondum
 
 
 def string_before(s, last):
@@ -60,16 +61,6 @@ def arg_smash(*arglists, force_kw=False):
     return "{}".format(smash)
 
 
-def cmdline(command):
-    process = subprocess.Popen(
-        args=command,
-        stdout=subprocess.PIPE,
-        shell=True
-    )
-    raw_text = process.communicate()[0].decode("utf-8") 
-    return raw_text.split("\n")
-
-
 def compile_project(args):
     print("Compiling project {}.".format(args.dir))
     source_dir = "{}/source".format(args.library_path)
@@ -82,6 +73,11 @@ def compile_project(args):
         VERBOSE = True
     else:
         VERBOSE = False
+
+    details = dot_fondum(args.dir, "site")
+    if details["result"] is not True:
+        print("Error: {}".format(details['result']))
+        exit()
 
     # reading/rendering settings files
     settings_files = os.listdir(settings_dir)
@@ -114,6 +110,7 @@ def compile_project(args):
             print('    > creating the docker directory and git repo.')
         os.makedirs(docker_name)
         dir_util.copy_tree(starter_docker_dir, docker_name)
+        post_dot_fondum(docker_name, {"role": "docker"})
         os.chdir(docker_name)
         result = cmdline('git init')
         if VERBOSE:

@@ -28,27 +28,45 @@ from supercopy import SELF_NAME, NOW
 from supercopy import tabbed_text
 import create
 import comple
+import establish
 
-parser = argparse.ArgumentParser(description="Create the initial web site into a new directory.")
-parser.add_argument(
-    "cmd",
-    type=str,
-    help="command to run"
-)
-parser.add_argument(
-    "dir",
-    type=str,
-    help="the web site domain name storing the web project"
-)
+
+parser = argparse.ArgumentParser(description="Fondum super-framework website management.")
 parser.add_argument(
     "-v", "--verbose",
     action="count",
     help="increase output verbosity"
 )
-parser.add_argument(
+subparsers = parser.add_subparsers(help='sub-command help', dest='cmd')
+
+parser_establish = subparsers.add_parser(
+    "establish",
+    help="establish root directory holding the website and docker sub-directories"
+)
+
+parser_create = subparsers.add_parser(
+    "create",
+    help="create website"
+)
+parser_create.add_argument(
+    "dir",
+    type=str,
+    help="the web site domain name storing the web project"
+)
+
+parser_compile = subparsers.add_parser(
+    "compile",
+    help="create website"
+)
+parser_compile.add_argument(
+    "dir",
+    type=str,
+    help="the web site domain name storing the web project"
+)
+parser_compile.add_argument(
     "-p", "--passive",
     action="count",
-    help="refrain from ever a deleting directory; simply overwrite"
+    help="refrain from ever a deleting site directory in docker; simply overwrite"
 )
 
 
@@ -57,11 +75,18 @@ def main():
     #
     args = parser.parse_args()
     args.library_path = library_path
-    # print("GOT IT", args.cmd, args.dir, "script=", args.script_path)
+    if "dir" in args:
+        if args.dir.endswith("/"):
+            args.dir = args.dir[:-1]
     if args.cmd=="create":
+        args.passive = False
         create.create_project(args)
     elif args.cmd=="compile":
         comple.compile_project(args)
+    elif args.cmd=="establish":
+        establish.establish_root(args)
+    elif args.cmd is None:
+        print('ERROR: missing command-line argument. Use --help for help.')
     else:
         print('ERROR: "{}" command not valid.'.format(args.cmd))
 
