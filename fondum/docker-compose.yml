@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+# {{{--INSERT-MARKER-1--}}}
+    nginx:
+        restart: always
+        build: ./nginx/
+        ports:
+            - "80:80"
+        links:
+# {{{--INSERT-MARKER-2--}}}
+
+    db:
+        image: mongo:3.0.2

@@ -29,6 +29,7 @@ from supercopy import tabbed_text
 import create
 import comple
 import establish
+import compose
 
 
 parser = argparse.ArgumentParser(description="Fondum super-framework website management.")
@@ -51,7 +52,7 @@ parser_create = subparsers.add_parser(
 parser_create.add_argument(
     "dir",
     type=str,
-    help="the web site domain name storing the web project"
+    help="the web site domain name/directory"
 )
 
 parser_compile = subparsers.add_parser(
@@ -61,12 +62,22 @@ parser_compile = subparsers.add_parser(
 parser_compile.add_argument(
     "dir",
     type=str,
-    help="the web site domain name storing the web project"
+    help="the web site domain name/directory"
 )
 parser_compile.add_argument(
     "-p", "--passive",
     action="count",
     help="refrain from ever a deleting site directory in docker; simply overwrite"
+)
+
+parser_compose = subparsers.add_parser(
+    "compose",
+    help="compose docker with emphasis on website"
+)
+parser_compose.add_argument(
+    "dir",
+    type=str,
+    help="the web site domain name/directory"
 )
 
 
@@ -85,6 +96,8 @@ def main():
         comple.compile_project(args)
     elif args.cmd=="establish":
         establish.establish_root(args)
+    elif args.cmd=="compose":
+        compose.compose_dockers(args)
     elif args.cmd is None:
         print('ERROR: missing command-line argument. Use --help for help.')
     else:

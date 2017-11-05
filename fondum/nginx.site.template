@@ -1,11 +1,11 @@
 server {
 
     listen 80;
-    server_name site;
+    server_name {{site_dir}} {{site_dir}}.localhost;
     charset utf-8;
 
     location / {
-        proxy_pass http://site:8000;
+        proxy_pass http://site_{{site_dir}}:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
