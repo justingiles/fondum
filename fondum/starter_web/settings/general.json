@@ -3,6 +3,11 @@
     "copyright": "&copy; 1952 John Doe; number lover, time traveler.",
     "rights": "MIT License.",
     "index_def": "page_numbers_top",
+    "font": {
+        "external": "https://fonts.googleapis.com/css?family=Didact+Gothic",
+        "menu-text": "\"Didact Gothic\", Geneva, AppleGothic, sans-serif;",
+        "body-text": "\"Didact Gothic\", Geneva, AppleGothic, sans-serif;"
+    },
     "color": {
         "menu-text": "black",
         "menu-background": "gold",

@@ -79,11 +79,22 @@ def compose_dockers(args):
         f.write(doc)
 
 
+    nginx_site_dir = "{}/nginx/sites-enabled".format(target_dir)
     if VERBOSE:
-        print("d04 updating NGINX sites.")
+        print("d04 updating NGINX sites (at {}).".format(nginx_site_dir))
+    if os.path.exists(nginx_site_dir):
+        dir_util.remove_tree(nginx_site_dir, verbose=VERBOSE)
+    supercopy.create_dir(nginx_site_dir)
+    with open("{}/nginx.site.template".format(args.library_path)) as f:
+        nginx_template = f.read()
+    for site in docker_sites:
+        nginx_text = nginx_template.replace("{{site}}", site)
+        with open("{}/{}".format(nginx_site_dir, site), "w+") as f:
+            f.write(nginx_text)
 
     if VERBOSE:
         print("d05 building docker.")
+
 
     if VERBOSE:
         print("d06 checking for discrepancies in other dockers.")    

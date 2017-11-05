@@ -12,6 +12,7 @@ from supercopy import SELF_NAME, NOW
 from supercopy import tabbed_text, size_split
 from utility import cmdline
 from migration import post_dot_fondum, dot_fondum
+import compose
 
 
 def string_before(s, last):
@@ -292,5 +293,7 @@ def compile_project(args):
 
     if VERBOSE:
         print("c09 done with compile.")
+
+    compose.compose_dockers(args)
 
 # eof
