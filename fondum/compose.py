@@ -59,9 +59,9 @@ def compose_dockers(args):
 
     if VERBOSE:
         print("d03 building docker-compose.yml.")
-    with open("{}/docker-compose.yml".format(args.library_path)) as f:
+    with open("{}/templates/docker-compose.yml".format(args.library_path)) as f:
         doc = f.read()
-    with open("{}/docker-compose.yml.site".format(args.library_path)) as f:
+    with open("{}/templates/docker-compose.yml.site".format(args.library_path)) as f:
         site_template = f.read()
     ext_template = "            - site_{{site}}"
     site_import_text = ""
@@ -85,7 +85,7 @@ def compose_dockers(args):
     if os.path.exists(nginx_site_dir):
         dir_util.remove_tree(nginx_site_dir, verbose=VERBOSE)
     supercopy.create_dir(nginx_site_dir)
-    with open("{}/nginx.site.template".format(args.library_path)) as f:
+    with open("{}/templates/nginx.site.template".format(args.library_path)) as f:
         nginx_template = f.read()
     for site in docker_sites:
         nginx_text = nginx_template.replace("{{site}}", site)
