@@ -101,7 +101,7 @@ def compile_project(args):
         print("   ERROR: docker.json missing 'target'!".format(settings_dir))
         ImportError("json entry missing")
     docker_name = "docker_{}".format(stg["docker"]['target'])
-    destination_dir = "{}/site_{}".format(docker_name, args.dir)
+    destination_dir = "{}/fondum_{}".format(docker_name, args.dir)
 
     #
     if VERBOSE:

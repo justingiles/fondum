@@ -31,6 +31,15 @@ def create_project(args):
     VERBOSE = args.verbose
     starter_dir = "{}/starter_web".format(args.library_path)
     #
+    # check common domain name flaws
+    #
+    if "." not in args.dir:
+        print('ERROR: "{}" does not appear to be a domain name.'.format(args.dir))
+    if args.dir.endswith(".") or args.dir.startswith("."):
+        print('ERROR: "{}" does not appear to be a domain name.'.format(args.dir))
+    if ("/" in args.dir) or ("\\" in args.dir):
+        print('ERROR: "{}" does not appear to be a domain name.'.format(args.dir))
+    #
     # create the subdirecories
     #
     if VERBOSE:

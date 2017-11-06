@@ -1,9 +1,9 @@
-    site_{{site}}:
+    fondum_{{site}}:
         restart: always
-        build: ./site_{{site}}
+        build: ./fondum_{{site}}
         ports:
             - "8000"
-        volumes: ['./site_{{site}}:/site']
+        volumes: ['./fondum_{{site}}:/site']
         environment:
             MONGODB_HOST: db
             MONGODB_PORT: 27017

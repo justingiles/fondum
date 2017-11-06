@@ -52,8 +52,8 @@ def compose_dockers(args):
         print("d02 gathering details about docker.")    
     docker_path = Path('./{}'.format(target_dir))
     dp = [f for f in docker_path.iterdir() if f.is_dir()]
-    docker_site_directories = [d.name for d in dp if d.name.startswith("site_")]
-    docker_sites = [d[5:] for d in docker_site_directories]
+    docker_site_directories = [d.name for d in dp if d.name.startswith("fondum_")]
+    docker_sites = [d[7:] for d in docker_site_directories]
     print(docker_sites)
 
 
@@ -63,7 +63,7 @@ def compose_dockers(args):
         doc = f.read()
     with open("{}/templates/docker-compose.yml.site".format(args.library_path)) as f:
         site_template = f.read()
-    ext_template = "            - site_{{site}}"
+    ext_template = "            - fondum_{{site}}"
     site_import_text = ""
     ext_import_text = ""
     for site in docker_sites:
@@ -94,13 +94,16 @@ def compose_dockers(args):
     if VERBOSE:
         print("d04 updating NGINX sites (at {}).".format(nginx_site_dir))
     if os.path.exists(nginx_site_dir):
-        dir_util.remove_tree(nginx_site_dir, verbose=VERBOSE)
-    supercopy.create_dir(nginx_site_dir)
+        for fn in os.listdir(nginx_site_dir):
+            if fn.startswith("fondum_"):
+                os.remove(os.path.join(nginx_site_dir, fn))
+    else:
+        supercopy.create_dir(nginx_site_dir)
     with open("{}/templates/nginx.site.template".format(args.library_path)) as f:
         nginx_template = f.read()
     for site in docker_sites:
         nginx_text = nginx_template.replace("{{site}}", site)
-        with open("{}/{}".format(nginx_site_dir, site), "w+") as f:
+        with open("{}/fondum_{}".format(nginx_site_dir, site), "w+") as f:
             f.write(nginx_text)
 
     if VERBOSE:
