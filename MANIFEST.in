@@ -1,3 +1,5 @@
-include LICENSE README.md
-recursive-include fondum *
+include LICENSE README.md fondum/nginx.site.template fondum/docker-compose.yml fondumd/docker-compose.yml.site
+recursive-include fondum/source *
+recursive-include fondum/starter_web *
+recursive-include fondum/starter_docker *
 global-exclude *.pyc
