@@ -75,6 +75,17 @@ def compose_dockers(args):
         ext_import_text += "\n"
     doc = doc.replace("# {{{--INSERT-MARKER-1--}}}", site_import_text, 1)
     doc = doc.replace("# {{{--INSERT-MARKER-2--}}}", ext_import_text, 1)
+    manual_filename = "{}/docker-compose.yml.INCLUDE".format(target_dir)
+    if not os.path.exists(manual_filename):
+        with open(manual_filename, "w+") as f:
+            f.write("# This file, if used, is inserted AS-IS into the end of docker-compose.yml.\n")
+            f.write("# \n")
+            f.write("# TODO: in the future, it will be possible to suppress docker-compose 'site'\n")
+            f.write("#       generation of fondum sites with a value in the \n")
+            f.write("#       <site>/settings/docker.json file.\n")
+    with open(manual_filename) as f:
+        manually_added_text = f.read()
+    doc = doc.replace("# {{{--INSERT-MARKER-3--}}}", manually_added_text, 1)
     with open("{}/docker-compose.yml".format(target_dir), "w") as f:
         f.write(doc)
 

@@ -13,3 +13,6 @@ services:
 
     db:
         image: mongo:3.0.2
+
+# {{{--INSERT-MARKER-3--}}}
+
