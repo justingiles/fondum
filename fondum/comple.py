@@ -63,7 +63,7 @@ def arg_smash(*arglists, force_kw=False):
 
 
 def compile_project(args):
-    print("Compiling project {}.".format(args.dir))
+    print("COMPILE project {}.".format(args.dir))
     source_dir = "{}/source".format(args.library_path)
     starter_docker_dir = "{}/starter_docker".format(args.library_path)
     settings_dir = "{}/settings".format(args.dir)
@@ -240,7 +240,7 @@ def compile_project(args):
         print("c06D compiling index.")
     index_def = stg["general"]["index_def"]
     index_view_text = ""
-    index_view_text += "@app.route('/', methods=['GET'])\n"
+    index_view_text += "@app.route('/', methods=['GET', 'POST'])\n"
     index_view_text += "def index():\n"
     index_view_text += '    return {}()\n'.format(index_def)
     index_view_text += "\n\n"

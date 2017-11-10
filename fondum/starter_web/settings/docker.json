@@ -1,3 +1,4 @@
 {
-    "target": "default"
+    "target": "{{DOCKER_TARGET}}",
+    "production-version": false
 }

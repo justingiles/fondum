@@ -15,7 +15,7 @@ from migration import post_dot_fondum, dot_fondum
 
 
 def compose_dockers(args):
-    print("Composing docker group(s) associated with {}.".format(args.dir))
+    print("COMPOSE docker group(s) associated with {}.".format(args.dir))
     orig_path = os.getcwd()
 
     if args.verbose:

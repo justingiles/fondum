@@ -27,7 +27,7 @@ def before_request():
     g.nav_icon = nav_icon
     if g.user.is_authenticated:
         g.account = account__database.read_account_byUser(g.user)
-        g.display_name = g.account.s_name  # required
+        g.display_name = g.account.display  # required
     else:
         g.account = None
         g.display_name = "Anonymous"  # required
@@ -70,13 +70,13 @@ def google_authorized(resp, est):
         if msg.is_bad(user):
             msg.flash(user)
             return redirect(url_for('index'))
-        account = account__database.create_account(user, person.data[u'name'])
+        account = account__database.create_account(user)
         if msg.is_bad(account):
             msg.flash(account)
             return redirect(url_for('index'))
         login_user(user)
         msg.flash(msg.success(
-            'Welcome, your name has been determined to be <b>{}</b>'.format(account.s_name),
+            'Welcome, your true name has been determined to be <b>{}</b>'.format(account.display),
             return_def="index"
         ))
         return redirect(url_for('index'))

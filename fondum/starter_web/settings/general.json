@@ -1,20 +1,20 @@
 {
-    "site_title": "Number Posting for LIFE",
-    "copyright": "&copy; 1952 John Doe; number lover, time traveler.",
-    "rights": "MIT License.",
-    "index_def": "page_numbers_top",
+    "site_title": "{{DOMAIN}} Web Site",
+    "copyright": "&copy; X.",
+    "rights": "Undefined License.",
+    "index_def": "page_main_about",
     "font": {
-        "external": "https://fonts.googleapis.com/css?family=Didact+Gothic",
-        "menu-text": "\"Didact Gothic\", Geneva, AppleGothic, sans-serif;",
-        "body-text": "\"Didact Gothic\", Geneva, AppleGothic, sans-serif;"
+        "external": null,
+        "menu-text": "Helvitica, Arial, sans-serif;",
+        "body-text": "Helvitica, Arial, sans-serif;"
     },
     "color": {
         "menu-text": "black",
-        "menu-background": "gold",
+        "menu-background": "AliceBlue",
         "footer-text": "black",
-        "footer-background": "gold",
+        "footer-background": "AliceBlue",
         "body-text": "white",
-        "body-background": "slateblue",
+        "body-background": "DarkGreen",
         "a-link": "linen",
         "a-visited": "beige",
         "a-hover": "linen",
@@ -41,59 +41,27 @@
             "submenus": [
                 {
                     "type": "link",
-                    "title": "All About Numbers",
-                    "url": "/numbers/about/"
-                }
-            ]
-        },
-        {
-            "type": "drop",
-            "title": "Numbers",
-            "submenus": [
-                {
-                    "type": "link",
-                    "title": "Top Numbers",
-                    "url": "/numbers/top/"
-                },
-                {
-                    "type": "link",
-                    "title": "Find A Number",
-                    "url": "/numbers/search/"
-                },
-                {
-                    "type": "link",
-                    "title": "Enter New Number",
-                    "url": "/numbers/post/"
+                    "title": "All About {{DOMAIN}}",
+                    "url": "/main/about/"
                 }
             ]
         }
     ],
     "menus_right": [
         {
-            "type": "link",
-            "title": "Number Store",
-            "url": "/company/store/"
-        },
-        {
             "type": "login",
             "submenus": [
                 {
                     "type": "link",
-                    "title": "Create New NumberLife Account",
+                    "title": "Create New {{DOMAIN}} Account",
                     "url": "/account/new/",
                     "logged_in": false
                 },
                 {
                     "type": "link",
-                    "title": "Login to NumberLife",
+                    "title": "Login to {{DOMAIN}}",
                     "url": "/account/login/",
                     "logged_in": false
-                },
-                {
-                    "type": "link",
-                    "title": "My Numbers",
-                    "url": "/account/numbers/me",
-                    "logged_in": true
                 },
                 {
                     "type": "link",
@@ -107,13 +75,13 @@
     "footer_links_left": [
         {
             "title": "About Us",
-            "url": "/company/about/"
+            "url": "/main/about/"
         }
     ],
     "footer_links_right": [
         {
             "title": "GitHub",
-            "url": "www.github.com/X"
+            "url": "www.github.com/{{DOMAIN}}"
         }
     ]
 }

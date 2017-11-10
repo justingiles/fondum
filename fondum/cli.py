@@ -1,17 +1,6 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-"""
-Fondum
-Usage:
-  fondum create <domain-name>
-  fondum compile <domain-name>
-  fondum -v | --version
-  fondum -h | --help
-Options:
-  -h, --help          Help information.
-  -v, --version       Show version.
-"""
 
 import argparse
 import os
@@ -53,6 +42,10 @@ parser_create.add_argument(
     "dir",
     type=str,
     help="the web site domain name/directory"
+)
+parser_create.add_argument(
+    "--docker",
+    help="specificy docker target"
 )
 
 parser_compile = subparsers.add_parser(

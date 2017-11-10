@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import datetime
 
+# utilities involving filespace and strings
 
 SELF_NAME = "pfondum"
 NOW = datetime.datetime.now()
@@ -127,3 +128,15 @@ def size_split(s, n):
             s = s[n:]
     return list(_f(s, n))
 
+
+def file_dict_swapper(filename, data):
+    with open(filename) as f:
+        text = f.read()
+    for k, v in data.items():
+        target = "{{{{{key}}}}}".format(key=k)
+        text = text.replace(target, v)
+    with open(filename, "w+") as f:
+        f.write(text)
+    return
+
+# eof

@@ -5,7 +5,7 @@ import sys
 
 import supercopy
 from supercopy import SELF_NAME, NOW
-from supercopy import tabbed_text, size_split
+from supercopy import tabbed_text, size_split, file_dict_swapper
 from utility import cmdline
 from migration import post_dot_fondum, dot_fondum
 
@@ -26,7 +26,7 @@ def create_project(args):
     #
     # start
     #
-    print ("Creating project {}.".format(args.dir))
+    print ("CREATE project {}.".format(args.dir))
     root_dir = args.dir
     VERBOSE = args.verbose
     starter_dir = "{}/starter_web".format(args.library_path)
@@ -54,39 +54,33 @@ def create_project(args):
         print('    > FAIL: the "{}" directory already exists.'.format(args.dir))
         exit()
     #
+    # customizing the new directory using args.dir
+    #
+    if VERBOSE:
+        print('n2. customizing based on command-line parameters')
+    if args.docker:
+        docker_target = args.docker
+    else:
+        docker_target = "default"
+    file_dict_swapper("{}/settings/docker.json".format(root_dir), {'DOCKER_TARGET': docker_target})
+    file_dict_swapper("{}/settings/general.json".format(root_dir), {'DOMAIN': args.dir})
+    file_dict_swapper("{}/custom/main__pages.py".format(root_dir), {'DOMAIN': args.dir})
+    file_dict_swapper("{}/settings/flask-settings.py".format(root_dir), {'DOMAIN': args.dir})
+    #
     # generate web site
     #
     if VERBOSE:
-        print('n2. runing compiler against the new web site.')
+        print('n3. runing compiler against the new web site.')
     comple.compile_project(args)
 
     if VERBOSE:
-        print('n3. creating GIT repo.')
+        print('n4. creating GIT repo.')
         print("...")
     os.chdir(root_dir)
     result = cmdline('git init')
     if VERBOSE:
         print(tabbed_text(result))
     os.chdir(orig_path)
-    #
-    # check OS environment
-    #
-    if VERBOSE:
-        print('n4. checking for docker and docker-compose in OS.')
-    result = cmdline('docker --version')
-    if result[0] and " version " in result[0]:
-        if VERBOSE:
-            print("    > docker found.")
-    else:
-        print("    > ERROR! - don't see docker")
-        exit()
-    result = cmdline('docker-compose --version')
-    if result[0] and "docker-compose version" in result[0]:
-        if VERBOSE:
-            print("    > docker-compose found.")
-    else:
-        print("    > ERROR! - don't see docker-compose")
-        exit()
 
     if VERBOSE:
         print('n5. done with creation of {}.'.format(args.dir))

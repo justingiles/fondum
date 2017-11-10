@@ -1,0 +1,3 @@
+{
+    "target": "{{DOCKER_TARGET}}"
+}

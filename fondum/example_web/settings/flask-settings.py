@@ -7,8 +7,8 @@ class Config(object):
     #
     # MongoDB details
     #
-    MONGODB_DB = 'site_{{DOMAIN}}'
-    MONGODB_HOST = 'mongodb://db/site_{{DOMAIN}}'
+    MONGODB_DB = 'numberposting'
+    MONGODB_HOST = 'mongodb://db/numberposting'
     #
     # Amazon S3 details
     #
@@ -16,7 +16,7 @@ class Config(object):
     S3_KEY = 'XXXXXXXXXXXXXXXXXXXX'
     S3_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     S3_UPLOAD_DIRECTORY = 'source_pics'
-    S3_BUCKET = 'site-{{DOMAIN}}-article-pictures'  # this is the default bucket for article pictures
+    S3_BUCKET = 'numberposting-article-pictures'  # this is the default bucket for article pictures
     #
     # Google OAuth2 details
     #
@@ -33,20 +33,20 @@ class Config(object):
         'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
     }
     # return urls:
-    #   http://{{DOMAIN}}/account/google-oauth2-callback
+    #   http://www.numberposting.life/player/google-oauth2-callback
     #   http://127.0.0.1/player/google-oauth2-callback
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
-    # MONGODB_DB = 'numberposting'
-    # MONGODB_PASSWORD = 'xxxxxxxxx'
-    # MONGODB_HOST = "mongodb://numberpostingsite:{}@".format(MONGODB_PASSWORD) + \
-    #     "clusterX-shard-0.domain.com:27017," + \
-    #     "clusterX-shard-1.domain.com:27017," + \
-    #     "clusterX-shard-2.domain.com:27017/" + \
-    #     "{}?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin".format(MONGODB_DB)
-    # HOST = '0.0.0.0'
+    MONGODB_DB = 'numberposting'
+    MONGODB_PASSWORD = 'xxxxxxxxx'
+    MONGODB_HOST = "mongodb://numberpostingsite:{}@".format(MONGODB_PASSWORD) + \
+        "clusterX-shard-0.domain.com:27017," + \
+        "clusterX-shard-1.domain.com:27017," + \
+        "clusterX-shard-2.domain.com:27017/" + \
+        "{}?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin".format(MONGODB_DB)
+    HOST = '0.0.0.0'
 
 
 class DevelopmentConfig(Config):

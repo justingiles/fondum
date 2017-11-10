@@ -1,6 +1,9 @@
 import os
+import sys
 
 from migration import post_dot_fondum, dot_fondum
+from utility import cmdline
+
 
 def establish_root(args):
     #
@@ -17,9 +20,41 @@ def establish_root(args):
             print("Error: {}".format(result["result"]))
         exit()
     #
+    print("ESTABLISH fondum root directory at {}.".format(orig_path))
+    #
+    # check OS environment
+    #
+    print("  01 looking for python 3.5 or better.")
+    ver = sys.version_info
+    if ver[0]==3 and ver[1]>=5:
+        print("    > python {}.{} found.".format(ver[0], ver[1]))
+    else:
+        print("    > ERROR: python {}.{} found.".format(ver[0], ver[1]))
+        exit()
+    print("  02 looking for GIT.")
+    result = cmdline('git --version')
+    if result[0] and " version " in result[0]:
+        print("    > git found.")
+    else:
+        print("    > ERROR! - don't see 'git'")
+        exit()
+    print('  03 looking for docker and docker-compose.')
+    result = cmdline('docker --version')
+    if result[0] and " version " in result[0]:
+        print("    > docker found.")
+    else:
+        print("    > ERROR! - don't see docker")
+        exit()
+    result = cmdline('docker-compose --version')
+    if result[0] and "docker-compose version" in result[0]:
+        print("    > docker-compose found.")
+    else:
+        print("    > ERROR! - don't see docker-compose")
+        exit()
+
+    #
     # start
     #
-    print("Establishing fondum root directory at {}.".format(orig_path))
     post_dot_fondum(orig_path, {"role": "root"})
     print("Done.")
 
