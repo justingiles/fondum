@@ -14,6 +14,7 @@ class Page(object):
     table_order = []
     default_text = None
     only_use_default_text = False
+    use_jinja = True
 
     class Top(object):
         pass
@@ -49,6 +50,11 @@ class Page(object):
             self.has_catalog = True
         else:
             self.has_catalog = False
+
+
+    def data_for_text_render(self):
+        return {"g": g}
+
 
     def process(self, TABLE_NAME=None, **kwargs):
         self.url_params = kwargs

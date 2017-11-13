@@ -80,8 +80,8 @@
     ],
     "footer_links_right": [
         {
-            "title": "GitHub",
-            "url": "www.github.com/{{DOMAIN}}"
+            "title": "Special",
+            "url": "/main/special/"
         }
     ]
 }

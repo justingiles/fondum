@@ -54,6 +54,14 @@ def page_handler(page, source_def, key, **kwargs):
         if not current_user.is_authenticated:
             msg.flash('You must be logged in.', t="warning")
             return redirect(url_for('index'))
+    #
+    # handle purposeful bypass
+    #
+    if hasattr(page, "fondum_bypass"):
+        return page.fondum_bypass(**kwargs)
+    #
+    # generate html
+    #
     article = database.read_article_byKey(key)
     html = parsing.generate_html(article, page)
     #

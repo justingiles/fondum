@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h1>Special Page with Parameter in URL</h1>
+<p>
+    Note: the content is "encased" in the fondum html framework because it extends
+    "base.html". See the "special-with-parm.html" template file.
+</p>
+<h3>Parameter is {{kwargs.myparm}}</h3>
+{% endblock %}
