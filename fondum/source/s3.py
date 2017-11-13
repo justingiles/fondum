@@ -21,12 +21,14 @@ def s3_upload(source_file, upload_dir=None, bucket=None, acl='public-read'):
         the source file.
     """
 
+    details = {}
+    details['success'] = False
+    details['url'] = ""
+    details['etag'] = ""
+    details['name'] = ""
+
+
     if not source_file.data.filename:
-        details = {}
-        details['success'] = False
-        details['url'] = ""
-        details['etag'] = ""
-        details['name'] = ""
         return details
 
     if bucket is None:
@@ -47,15 +49,17 @@ def s3_upload(source_file, upload_dir=None, bucket=None, acl='public-read'):
     )
     b = conn.get_bucket(bucket)
 
-    sml = b.new_key("/".join([upload_dir, destination_filename]))
+    key = "/".join([upload_dir, destination_filename])
+    sml = b.new_key(key)
     sml.set_contents_from_string(source_file.data.read())
     sml.set_acl(acl)
 
-    details = {}
     details['success'] = True
     details['url'] = sml.generate_url(expires_in=0, query_auth=False)
     details['etag'] = sml.key
     details['name'] = source_filename
+    details['key'] = key
+    details['bucket'] = app.config["S3_BUCKET"]
 
     return details
 

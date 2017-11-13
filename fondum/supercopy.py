@@ -5,7 +5,7 @@ import datetime
 
 # utilities involving filespace and strings
 
-SELF_NAME = "pfondum"
+SELF_NAME = "fondum"
 NOW = datetime.datetime.now()
 
 
