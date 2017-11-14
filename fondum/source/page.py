@@ -95,7 +95,7 @@ class Page(object):
 
 class PageForm(FlaskForm):
 
-    def __init__(self, outer_page_instance):
+    def __init__(self, outer_page_instance=None):
         self.page = outer_page_instance
 
     def pull_data(self, source):
@@ -119,7 +119,7 @@ class PageTable(object):
     key_name = "not defined"
     table_name = "Not Defined"
 
-    def __init__(self, outer_page_instance):
+    def __init__(self, outer_page_instance=None):
         self.page = outer_page_instance
         self.rows = []
         self.header = None
