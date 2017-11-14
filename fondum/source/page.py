@@ -65,7 +65,7 @@ class Page(object):
             self.current_table_name = None
             self.tables = []
             for table_class in self.table_order:
-                self.tables.append(table_class(self))
+                self.tables.append(table_class(outer_page_instance=self))
             self.default_table_name = self.tables[0].key_name
             if not TABLE_NAME:
                 TABLE_NAME = self.default_table_name
@@ -88,14 +88,15 @@ class Page(object):
         # PROCESS MAIN FORM
         #
         if self.has_form:
-            self.wtf = self.MainForm(self)
+            self.wtf = self.MainForm(outer_page_instance=self)
         #
         self.status = msg.success("page processed")
 
 
 class PageForm(FlaskForm):
 
-    def __init__(self, outer_page_instance=None):
+    def __init__(self, outer_page_instance=None, *args,  **kwargs):
+        FlaskForm.__init__(self, *args, **kwargs)
         self.page = outer_page_instance
 
     def pull_data(self, source):
