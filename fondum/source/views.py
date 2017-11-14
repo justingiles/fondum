@@ -70,7 +70,7 @@ def page_handler(page, source_def, key, **kwargs):
     if page.wtf:
         if page.wtf.validate_on_submit():
             if not hasattr(page.wtf, "process_form"):
-                msg.flash('JCFS error: no process_form method found', t="bug")
+                msg.flash('FONDUM error: no process_form method found', t="bug")
                 return redirect(url_for(source_def))
             result = page.wtf.process_form(page.wtf, **kwargs)
             if isinstance(result, Response):

@@ -65,7 +65,7 @@ class Page(object):
             self.current_table_name = None
             self.tables = []
             for table_class in self.table_order:
-                self.tables.append(table_class())
+                self.tables.append(table_class(self))
             self.default_table_name = self.tables[0].key_name
             if not TABLE_NAME:
                 TABLE_NAME = self.default_table_name
@@ -82,13 +82,21 @@ class Page(object):
         # PROCESS CATALOG
         #
         if self.has_catalog:
-            self.catalog = self.MainCatalog()
+            self.catalog = self.MainCatalog(self)
             self.catalog.process_catalog(TABLE_NAME=TABLE_NAME, **kwargs)
+        #
+        # PROCESS MAIN FORM
+        #
+        if self.has_form:
+            page.wtf = self.MainForm(self)
         #
         self.status = msg.success("page processed")
 
 
 class PageForm(FlaskForm):
+
+    def __init__(self, outer_page_instance):
+        self.page = outer_page_instance
 
     def pull_data(self, source):
         own_keys = [k.short_name for k in self]
@@ -111,7 +119,8 @@ class PageTable(object):
     key_name = "not defined"
     table_name = "Not Defined"
 
-    def __init__(self):
+    def __init__(self, outer_page_instance):
+        self.page = outer_page_instance
         self.rows = []
         self.header = None
 
@@ -147,8 +156,9 @@ class PageCatalog(object):
     show_date = False
     pic_position = Page.Top
 
-    def __init__(self):
+    def __init__(self, outer_page_instance):
         self.products = []
+        self.page = outer_page_instance
 
     def process_catalog(self, categories=None, TABLE_NAME=None, **kwargs):
         if self.use_table_name_as_category:

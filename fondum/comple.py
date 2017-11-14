@@ -212,8 +212,6 @@ def compile_project(args):
             page_views_text += "def {}({}):\n".format(def_name, def_parameters)
             page_views_text += "    page = {}.{}()\n".format(filename, class_name)
             page_views_text += "    page.process({})\n".format(arg_smash(page_parms, ["TABLE_NAME"], force_kw=True))
-            page_views_text += "    if page.MainForm:\n"
-            page_views_text += "        page.wtf = page.MainForm()\n"
             if page_parms:
                 page_views_text += "    return page_handler(\n"
                 page_views_text += "        page,\n"
