@@ -88,7 +88,7 @@ class Page(object):
         # PROCESS MAIN FORM
         #
         if self.has_form:
-            page.wtf = self.MainForm(self)
+            self.wtf = self.MainForm(self)
         #
         self.status = msg.success("page processed")
 
