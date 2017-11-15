@@ -237,10 +237,11 @@ def compile_project(args):
     if VERBOSE:
         print("c06D compiling index.")
     index_def = stg["general"]["index_def"]
+    index_parms = stg["general"].get("index_def_parms", "")
     index_view_text = ""
     index_view_text += "@app.route('/', methods=['GET', 'POST'])\n"
     index_view_text += "def index():\n"
-    index_view_text += '    return {}()\n'.format(index_def)
+    index_view_text += '    return {}({})\n'.format(index_def, index_parms)
     index_view_text += "\n\n"
 
 
