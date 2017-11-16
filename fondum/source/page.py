@@ -15,6 +15,8 @@ class Page(object):
     default_text = None
     only_use_default_text = False
     use_jinja = True
+    default_text_data = {"g": g}
+
 
     class Top(object):
         pass
@@ -50,10 +52,6 @@ class Page(object):
             self.has_catalog = True
         else:
             self.has_catalog = False
-
-
-    def data_for_text_render(self):
-        return {"g": g}
 
 
     def process(self, TABLE_NAME=None, **kwargs):

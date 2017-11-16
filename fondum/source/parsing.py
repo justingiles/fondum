@@ -8,9 +8,6 @@ def anchor_macro(text):
     t = text.strip()
     return unicode('<a id="{}"></a>'.format(t))
 
-def empty_dict():
-    return {"g": g}
-
 
 macros = {
     "Anchor": anchor_macro
@@ -22,19 +19,17 @@ def generate_html(article, page=None):
     article_text = getattr(article, "s_creole_text", None)
     only_use_default_text = getattr(page, "only_use_default_text", False)
     use_jinja = getattr(page, "use_jinja", True)
-    data_for_text_render_func = getattr(page, "data_for_text_render", empty_dict)
+    default_text_data = getattr(page, "default_text_data", {})
     if article_text and not only_use_default_text:
         if use_jinja:
             template = Template(article_text)
-            article_data = data_for_text_render_func()
-            article_text = template.render(article_data)
+            article_text = template.render(default_text_data)
         src = cr.creole2html(article_text, macros=macros)
         src += "\n<br/>\n"
     elif default_text:
         if use_jinja:
             template = Template(default_text)
-            article_data = data_for_text_render_func()
-            default_text = template.render(article_data)
+            default_text = template.render(default_text_data)
         src = cr.creole2html(unicode(default_text), macros=macros)
         src += "\n<br/>\n"
     else:

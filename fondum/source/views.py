@@ -60,11 +60,6 @@ def page_handler(page, source_def, key, **kwargs):
     if hasattr(page, "fondum_bypass"):
         return page.fondum_bypass(**kwargs)
     #
-    # generate html
-    #
-    article = database.read_article_byKey(key)
-    html = parsing.generate_html(article, page)
-    #
     # form handling
     #
     if page.wtf:
@@ -91,6 +86,10 @@ def page_handler(page, source_def, key, **kwargs):
                             return redirect(url_for(result.return_def, **result.return_def_parms))
                         return redirect(url_for(result.return_def))
     #
+    # generate html
+    #
+    article = database.read_article_byKey(key)
+    html = parsing.generate_html(article, page)
     #
     #
     return render_template(
