@@ -174,6 +174,12 @@ You are now ready to start a Fondum project.
 * FLATTR: Online patronage tips for web pages and other content.
 * localtest.me: support for wildcard localhost domains for development testing.
 
+## Documenation Support Assumptions
+
+The following is a list of artibrary assumptions about the context fondum will be used in. They are not part of the framework itself, but all testing is done against these assumptions. And, documentation is filmed/written with the assumptions.
+
+* Digital Ocean: the docker will be hosted using Digital Ocean's cloud service.
+* NameCheap.com: DNS purchase and management.
 
 TBD:
 
