@@ -1,0 +1,71 @@
+{% macro render_radio_field(field) -%}
+  <li>
+    <p>
+        <label for="{{field.short_name}}">{{ field.label }}</label>
+    </p>
+    <p>
+      {% for value, label, _ in field.iter_choices() %}
+        <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"> {{ label }}
+        <br />
+      {% endfor %}
+    </p>
+    {% for error in field.errors %}
+    <p>
+        <span style="color: red;">{{ error }} </span>
+    </p>
+    {% endfor %}
+  </li>
+{%- endmacro %}
+
+{% macro render_main_field(field) -%}
+
+  {% if field.type in ["HiddenField", "CSRFTokenField"] %}
+
+  {{ field }}
+
+  {% else %}
+
+  <li>
+    {% if field.type == "SubmitField" %}
+    <p>
+      {{field}}
+    </p>
+    {% elif field.type == "DisplayTextField" %}
+    <p>
+        <label for="{{field.short_name}}">{{ field.label }}</label>
+    </p>
+    <p>
+        <b>{{ field.data }}</b>
+    </p>
+    {% elif field.type == "ButtonUrlField" %}
+      {% if field.data %}
+        {% if field.href %}
+    <p>
+      <a href="{{field.href}}" class="btn">{{ field.data }}</a>
+    </p>
+        {% else %}
+    <p>
+      <b>{{ field.data }}</b>
+    </p>
+        {% endif %}
+      {% endif %}
+    {% elif field.type == "RadioField" %}
+    {{ render_radio_field(field) }}
+    {% else %}
+    <p>
+      <label for="{{field.short_name}}">{{ field.label }}</label>
+    </p>
+    <p>
+      {{ field }}
+    </p>
+    {% endif %}
+    {% for error in field.errors %}
+    <p>
+      <span style="color: red;">{{ error }} </span>
+    </p>
+    {% endfor %}
+  </li>
+
+  {% endif %}
+
+{%- endmacro %}
