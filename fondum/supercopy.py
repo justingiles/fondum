@@ -40,7 +40,7 @@ def copy_dir(source_dir, destination_dir, verbose=False, interpret=True):
     return
 
 
-def copy_file(filepath, source_dir, destination_dir, verbose=False, interpret=True):
+def copy_file(filepath, source_dir, destination_dir, verbose=False, interpret=True, rename=None):
     if source_dir:
         full_file_path = "{}/{}".format(source_dir, filepath)
     else:
@@ -61,6 +61,8 @@ def copy_file(filepath, source_dir, destination_dir, verbose=False, interpret=Tr
             final_data = parse_html(raw_data, filepath)
     else:
         filetype = "unknown"
+    if rename:
+        filepath = rename
     if raw(final_data):
         with open("{}/{}".format(destination_dir, filepath), "wb") as file:
             file.write(final_data)
