@@ -16,13 +16,27 @@
 <br />
 <div>
     <form action="" enctype="multipart/form-data" method="POST">
+      {% if page.wtf._form_style == "inline" %}
+
+          {% for field in page.wtf %}
+
+            {{ render_main_field(field, "", "") }}
+
+          {% endfor %}
+
+      {% else %}
+
         <ul class="formlist">
-            {% for field in page.wtf %}
+          {% for field in page.wtf %}
 
-            {{ render_main_field(field) }}
+          <li>
+            {{ render_main_field(field, "<p>", "</p>") }}
+          </li>
 
-            {% endfor %}
+          {% endfor %}
         </ul>
+
+      {% endif %}
     </form>
 </div>
   {% else %}

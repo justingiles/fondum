@@ -1,23 +1,16 @@
-{% macro render_radio_field(field) -%}
-  <li>
-    <p>
+{% macro render_radio_field(field, sep_in, sep_out) -%}
+    {{sep_in|safe}}
         <label for="{{field.short_name}}">{{ field.label }}</label>
-    </p>
-    <p>
+    {{sep_out|safe}}
+    {{sep_in|safe}}
       {% for value, label, _ in field.iter_choices() %}
         <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"> {{ label }}
         <br />
       {% endfor %}
-    </p>
-    {% for error in field.errors %}
-    <p>
-        <span style="color: red;">{{ error }} </span>
-    </p>
-    {% endfor %}
-  </li>
+    {{sep_out|safe}}
 {%- endmacro %}
 
-{% macro render_main_field(field) -%}
+{% macro render_main_field(field, sep_in, sep_out) -%}
 
   {% if field.type in ["HiddenField", "CSRFTokenField"] %}
 
@@ -25,46 +18,44 @@
 
   {% else %}
 
-  <li>
     {% if field.type == "SubmitField" %}
-    <p>
+    {{sep_in|safe}}
       {{field}}
-    </p>
+    {{sep_out|safe}}
     {% elif field.type == "DisplayTextField" %}
-    <p>
+    {{sep_in|safe}}
         <label for="{{field.short_name}}">{{ field.label }}</label>
-    </p>
-    <p>
+    {{sep_out|safe}}
+    {{sep_in|safe}}
         <b>{{ field.data }}</b>
-    </p>
+    {{sep_out|safe}}
     {% elif field.type == "ButtonUrlField" %}
       {% if field.data %}
         {% if field.href %}
-    <p>
+    {{sep_in|safe}}
       <a href="{{field.href}}" class="btn">{{ field.data }}</a>
-    </p>
+    {{sep_out|safe}}
         {% else %}
-    <p>
+    {{sep_in|safe}}
       <b>{{ field.data }}</b>
-    </p>
+    {{sep_out|safe}}
         {% endif %}
       {% endif %}
     {% elif field.type == "RadioField" %}
     {{ render_radio_field(field) }}
     {% else %}
-    <p>
+    {{sep_in|safe}}
       <label for="{{field.short_name}}">{{ field.label }}</label>
-    </p>
-    <p>
+    {{sep_out|safe}}
+    {{sep_in|safe}}
       {{ field }}
-    </p>
+    {{sep_out|safe}}
     {% endif %}
     {% for error in field.errors %}
-    <p>
+    {{sep_in|safe}}
       <span style="color: red;">{{ error }} </span>
-    </p>
+    {{sep_out|safe}}
     {% endfor %}
-  </li>
 
   {% endif %}
 
