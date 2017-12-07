@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, FileField
+import wtforms as w
 from wtforms.validators import InputRequired
 from app import g
 import copy
@@ -195,19 +195,110 @@ class BlogCatalog(PageCatalog):
         self.products = blog_entries
         return
 
+########################################
+#
+#  NEW WTF-STYLE FIELDS
+#
+########################################
 
-class DisplayPictureField(StringField):
+class DisplayPictureField(w.StringField):
     def __init__(self, label='', validators=None, url=None, **kwargs):
-        super(StringField, self).__init__(label, validators, **kwargs)
+        super(w.StringField, self).__init__(label, validators, **kwargs)
         self.url = url
         self.data = url
 
 
-class DisplayTextField(StringField):
+class DisplayTextField(w.StringField):
     def __init__(self, label='', validators=None, **kwargs):
-        super(StringField, self).__init__(label, validators, **kwargs)
+        super(w.StringField, self).__init__(label, validators, **kwargs)
 
 
-class ButtonUrlField(StringField):
+class ButtonUrlField(w.StringField):
     def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(StringField, self).__init__(label, validators, **kwargs)
+        super(w.StringField, self).__init__(label, validators, **kwargs)
+
+##########################################
+#
+#  NEW FEATURES FOR EXISTING WTFORMS FIELDS
+#
+##########################################
+
+class BooleanField(w.BooleanField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.BooleanField, self).__init__(label, validators, **kwargs)
+
+
+class DateField(w.DateField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.DateField, self).__init__(label, validators, **kwargs)
+
+
+class DateTimeField(w.DateTimeField):
+    def __init__(self, label='', validators=None, format='%Y-%m-%d', href=None, **kwargs):
+        super(w.DateTimeField, self).__init__(label, validators, format, **kwargs)
+
+
+class DecimalField(w.DecimalField):
+    def __init__(self, label='', validators=None, href=None, format='%Y-%m-%d %H:%M:%S', **kwargs):
+        super(w.DecimalField, self).__init__(label, validators, format, **kwargs)
+
+
+class FileField(w.FileField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.FileField, self).__init__(label, validators, **kwargs)
+
+
+# class MultipleFileField(w.MultipleFileField):
+#     def __init__(self, label='', validators=None, href=None, **kwargs):
+#         super(w.MultipleFileField, self).__init__(label, validators, **kwargs)
+
+
+class FloatField(w.FloatField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.FloatField, self).__init__(label, validators, **kwargs)
+
+
+class IntegerField(w.IntegerField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.IntegerField, self).__init__(label, validators, **kwargs)
+
+
+class RadioField(w.RadioField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.RadioField, self).__init__(label, validators, **kwargs)
+
+
+class SelectField(w.SelectField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.SelectField, self).__init__(label, validators, **kwargs)
+
+
+class SelectMultipleField(w.SelectMultipleField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.SelectMultipleField, self).__init__(label, validators, **kwargs)
+
+
+class SubmitField(w.SubmitField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.SubmitField, self).__init__(label, validators, **kwargs)
+
+
+class StringField(w.StringField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.StringField, self).__init__(label, validators, **kwargs)
+
+
+class HiddenField(w.HiddenField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.HiddenField, self).__init__(label, validators, **kwargs)
+
+
+class PasswordField(w.PasswordField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.PasswordField, self).__init__(label, validators, **kwargs)
+
+
+class TextAreaField(w.TextAreaField):
+    def __init__(self, label='', validators=None, href=None, **kwargs):
+        super(w.TextAreaField, self).__init__(label, validators, **kwargs)
+
