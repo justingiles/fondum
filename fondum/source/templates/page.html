@@ -20,7 +20,7 @@
 
           {% for field in page.wtf %}
 
-            {{ render_main_field(field, "", "") }}
+            {{ render_main_field(field, page.wtf._form_style) }}
 
           {% endfor %}
 
@@ -30,7 +30,7 @@
           {% for field in page.wtf %}
 
           <li>
-            {{ render_main_field(field, "<p>", "</p>") }}
+            {{ render_main_field(field, page.wtf._form_style) }}
           </li>
 
           {% endfor %}

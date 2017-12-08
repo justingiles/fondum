@@ -1,62 +1,80 @@
-{% macro render_radio_field(field, sep_in, sep_out) -%}
-    {{sep_in|safe}}
-        <label for="{{field.short_name}}">{{ field.label }}</label>
-    {{sep_out|safe}}
-    {{sep_in|safe}}
-      {% for value, label, _ in field.iter_choices() %}
-        <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"> {{ label }}
-        <br />
-      {% endfor %}
-    {{sep_out|safe}}
-{%- endmacro %}
+{% macro render_main_field(field, style) -%}
 
-{% macro render_main_field(field, sep_in, sep_out) -%}
+  {% if style=="inline" %}
+    {% set sep_in = "" %}
+    {% set sep_out = "" %}
+  {% else %} {# "basic" #}
+    {% set sep_in = "<p>" %}
+    {% set sep_out = "</p>" %}
+  {% endif %}
 
-  {% if field.type in ["HiddenField", "CSRFTokenField"] %}
+  {#            LABEL FIELD         #}
 
-  {{ field }}
+  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField"] %}
+  {% else %}
+  {{sep_in|safe}}
+      {% if style=="basic" %}<b>{% endif %}
+      <label for="{{field.short_name}}">{{ field.label }}</label>
+      {% if style=="basic" %}</b>{% endif %}
+  {{sep_out|safe}}
+  {% endif %}
+
+  {#            DATA FIELD         #}
+
+  {% if field.type == "DisplayTextField" %}
+
+  {{sep_in|safe}}
+      <b>{{ field.data }}</b>
+  {{sep_out|safe}}
+
+  {% elif field.type == "ButtonUrlField" %}
+
+    {% if field.data %}
+      {% if field.href %}
+  {{sep_in|safe}}
+    <a href="{{field.href}}" class="btn">{{ field.data }}</a>
+  {{sep_out|safe}}
+      {% else %}
+  {{sep_in|safe}}
+    <b>{{ field.data }}</b>
+  {{sep_out|safe}}
+      {% endif %}
+    {% endif %}
+
+  {% elif field.type == "RadioField" %}
+
+  {{sep_in|safe}}
+    {% for value, label, _ in field.iter_choices() %}
+      <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="y"> {{ label }}
+      <br />
+    {% endfor %}
+  {{sep_out|safe}}
+
+  {% elif field.type == "BooleanField" %}
+
+  {{sep_in|safe}}
+    {{ field(class_="autowidth") }}
+    {{field.label}}
+  {{sep_out|safe}}
+
+  {% elif field.type in ["SubmitField"] %}
+
+  {{sep_in|safe}}
+    {{ field(class_="autowidth") }}
+  {{sep_out|safe}}
 
   {% else %}
 
-    {% if field.type == "SubmitField" %}
-    {{sep_in|safe}}
-      {{field}}
-    {{sep_out|safe}}
-    {% elif field.type == "DisplayTextField" %}
-    {{sep_in|safe}}
-        <label for="{{field.short_name}}">{{ field.label }}</label>
-    {{sep_out|safe}}
-    {{sep_in|safe}}
-        <b>{{ field.data }}</b>
-    {{sep_out|safe}}
-    {% elif field.type == "ButtonUrlField" %}
-      {% if field.data %}
-        {% if field.href %}
-    {{sep_in|safe}}
-      <a href="{{field.href}}" class="btn">{{ field.data }}</a>
-    {{sep_out|safe}}
-        {% else %}
-    {{sep_in|safe}}
-      <b>{{ field.data }}</b>
-    {{sep_out|safe}}
-        {% endif %}
-      {% endif %}
-    {% elif field.type == "RadioField" %}
-    {{ render_radio_field(field) }}
-    {% else %}
-    {{sep_in|safe}}
-      <label for="{{field.short_name}}">{{ field.label }}</label>
-    {{sep_out|safe}}
-    {{sep_in|safe}}
-      {{ field }}
-    {{sep_out|safe}}
-    {% endif %}
-    {% for error in field.errors %}
-    {{sep_in|safe}}
-      <span style="color: red;">{{ error }} </span>
-    {{sep_out|safe}}
-    {% endfor %}
+  {{sep_in|safe}}
+    {{ field }}
+  {{sep_out|safe}}
 
   {% endif %}
+
+  {% for error in field.errors %}
+  {{sep_in|safe}}
+    <span style="color: red;">{{ error }} </span>
+  {{sep_out|safe}}
+  {% endfor %}
 
 {%- endmacro %}
