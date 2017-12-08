@@ -16,7 +16,7 @@ class Page(object):
     only_use_default_text = False
     use_jinja = True
     default_text_data = {"g": g}
-
+    form_style = "basic"
 
     class Top(object):
         pass
@@ -86,16 +86,20 @@ class Page(object):
         # PROCESS MAIN FORM
         #
         if self.has_form:
-            self.wtf = self.MainForm(outer_page_instance=self)
+            self.wtf = self.MainForm(outer_page_instance=self, style=self.form_style)
         #
         self.status = msg.success("page processed")
 
 
+FORM_STYLES = ["basic", "inline", "horizontal"]
+
+
 class PageForm(FlaskForm):
 
-    def __init__(self, outer_page_instance=None, *args,  **kwargs):
+    def __init__(self, outer_page_instance=None, style=None, *args, **kwargs):
         FlaskForm.__init__(self, *args, **kwargs)
         self.page = outer_page_instance
+        self._form_style = style or FORM_STYLES[0]
 
     def pull_data(self, source):
         own_keys = [k.short_name for k in self]

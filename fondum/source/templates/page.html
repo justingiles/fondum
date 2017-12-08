@@ -1,25 +1,9 @@
 {% extends "base.html" %}
 
-{% macro render_radio_field(field) -%}
-  <li>
-    <p>
-        <label for="{{field.short_name}}">{{ field.label }}</label>
-    </p>
-    <p>
-      {% for value, label, _ in field.iter_choices() %}
-        <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}"> {{ label }}
-        <br />
-      {% endfor %}
-    </p>
-    {% for error in field.errors %}
-    <p>
-        <span style="color: red;">{{ error }} </span>
-    </p>
-    {% endfor %}
-  </li>
-{%- endmacro %}
 
 {% block body %}
+
+{% from "formhelpers.html" import render_main_field %}
 
 <p>
     <div class="creole">
@@ -32,56 +16,27 @@
 <br />
 <div>
     <form action="" enctype="multipart/form-data" method="POST">
+      {% if page.wtf._form_style == "inline" %}
+
+          {% for field in page.wtf %}
+
+            {{ render_main_field(field, "", "") }}
+
+          {% endfor %}
+
+      {% else %}
+
         <ul class="formlist">
-            {% for field in page.wtf %}
-              {% if field.type == "HiddenField" %}
-            {{ field }}
-              {% elif field.type == "CSRFTokenField" %}
-            {{ field }}
-              {% elif field.type == "SubmitField" %}
-            <li>
-                <button type="submit">{{field.label.text}}</button>
-            </li>
-              {% elif field.type == "DisplayTextField" %}
-            <li>
-                <p>
-                    <label for="{{field.short_name}}">{{ field.label }}</label>
-                </p>
-                <p>
-                    <b>{{ field.data }}</b>
-                </p>
-            </li>
-              {% elif field.type == "ButtonUrlField" %}
-                {% if field.data %}
-                  {% if field.href %}
-            <li>
-                <a href="{{field.href}}" class="btn">{{ field.data }}</a>
-            </li>
-                  {% else %}
-            <li>
-                <b>{{ field.data }}</b>
-            </li>
-                  {% endif %}
-                {% endif %}
-              {% elif field.type == "RadioField" %}
-                {{ render_radio_field(field) }}
-              {% else %}
-            <li>
-                <p>
-                    <label for="{{field.short_name}}">{{ field.label }}</label>
-                </p>
-                <p>
-                    {{ field }}
-                </p>
-                {% for error in field.errors %}
-                <p>
-                    <span style="color: red;">{{ error }} </span>
-                </p>
-                {% endfor %}
-            </li>
-              {% endif %}
-            {% endfor %}
+          {% for field in page.wtf %}
+
+          <li>
+            {{ render_main_field(field, "<p>", "</p>") }}
+          </li>
+
+          {% endfor %}
         </ul>
+
+      {% endif %}
     </form>
 </div>
   {% else %}

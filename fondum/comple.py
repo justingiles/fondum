@@ -140,9 +140,9 @@ def compile_project(args):
     # move key settings file(s)
     #
     if VERBOSE:
-        print("c04 moving flask-settings.py file to correct location.")
+        print("c04 moving flask-settings.py file to correct location and name.")
     # shutil.copy("{}/flask-settings.py".format(settings_dir), destination_dir)
-    supercopy.copy_file("flask-settings.py", settings_dir, destination_dir, verbose=VERBOSE)
+    supercopy.copy_file("flask-settings.py", settings_dir, destination_dir, verbose=VERBOSE, rename="flask_settings.py")
 
     # move custom files
     #

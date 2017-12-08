@@ -77,6 +77,25 @@ textarea {
 .table-row a:active {
   color: {{g.s["table_color"]["a-active"]}};
 }
+table {  
+    font-family: {{g.s['font']['body-text']}};
+    width: 100%; 
+    border-collapse: 
+    collapse; border-spacing: 0; 
+}
+td, th { border: 1px solid #CCC; height: 30px; } /* Make cells a bit taller */
+th {
+  background-color: {{g.s["table_color"]["menu-background"]}};
+  color: {{g.s["table_color"]["menu-text"]}};
+  font-weight: bold; /* Make sure they're bold */
+}
+tr {
+  background-color: {{g.s["table_color"]["body-background"]}};
+  color: {{g.s["table_color"]["body-text"]}};
+}
+td {  
+    text-align: center; /* Center our text */
+}
 {% endif %}
 
 {% if page and page.has_catalog %}
@@ -216,25 +235,6 @@ dd {
    padding: 10px 0px 10px 0px;
 }
 
-table {  
-    color: #333; /* Lighten up font color */
-    font-family: {{g.s['font']['body-text']}}; /* Nicer font */
-    width: 100%; 
-    border-collapse: 
-    collapse; border-spacing: 0; 
-}
-
-td, th { border: 1px solid #CCC; height: 30px; } /* Make cells a bit taller */
-
-th {  
-    background: #F3F3F3; /* Light grey background */
-    font-weight: bold; /* Make sure they're bold */
-}
-
-td {  
-    background: #FAFAFA; /* Lighter grey background */
-    text-align: center; /* Center our text */
-}
 a.btn {
     -webkit-appearance: button;
     -moz-appearance: button;

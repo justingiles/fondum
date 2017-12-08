@@ -62,10 +62,15 @@ def create_project(args):
         docker_target = args.docker
     else:
         docker_target = "default"
-    file_dict_swapper("{}/settings/docker.json".format(root_dir), {'DOCKER_TARGET': docker_target})
-    file_dict_swapper("{}/settings/general.json".format(root_dir), {'DOMAIN': args.dir})
-    file_dict_swapper("{}/custom/main__pages.py".format(root_dir), {'DOMAIN': args.dir})
-    file_dict_swapper("{}/settings/flask-settings.py".format(root_dir), {'DOMAIN': args.dir})
+    myvars = {
+        'DOCKER_TARGET': docker_target,
+        'DOMAIN': args.dir,
+        'SAFE_DOMAIN': args.dir.replace(".", "_")
+    }
+    file_dict_swapper("{}/settings/docker.json".format(root_dir), myvars)
+    file_dict_swapper("{}/settings/general.json".format(root_dir), myvars)
+    file_dict_swapper("{}/custom/main__pages.py".format(root_dir), myvars)
+    file_dict_swapper("{}/settings/flask-settings.py".format(root_dir), myvars)
     #
     # generate web site
     #
