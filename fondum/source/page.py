@@ -207,19 +207,20 @@ class BlogCatalog(PageCatalog):
 
 class DisplayPictureField(w.StringField):
     def __init__(self, label=None, validators=None, url=None, **kwargs):
-        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
+        super(DisplayPictureField, self).__init__(label=label, validators=validators, **kwargs)
         self.url = url
         self.data = url
 
 
 class DisplayTextField(w.StringField):
     def __init__(self, label=None, validators=None, **kwargs):
-        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
+        super(DisplayTextField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class ButtonUrlField(w.StringField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
-        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
+        super(ButtonUrlField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 ##########################################
 #

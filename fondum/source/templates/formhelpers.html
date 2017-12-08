@@ -10,7 +10,7 @@
 
   {#            LABEL FIELD         #}
 
-  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField"] %}
+  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField", "ButtonUrlField"] %}
   {% else %}
   {{sep_in|safe}}
       {% if style=="basic" %}<b>{% endif %}
@@ -29,17 +29,9 @@
 
   {% elif field.type == "ButtonUrlField" %}
 
-    {% if field.data %}
-      {% if field.href %}
   {{sep_in|safe}}
-    <a href="{{field.href}}" class="btn">{{ field.data }}</a>
+    <a href="{{field.href}}" class="btn">{{ field.label }}</a>
   {{sep_out|safe}}
-      {% else %}
-  {{sep_in|safe}}
-    <b>{{ field.data }}</b>
-  {{sep_out|safe}}
-      {% endif %}
-    {% endif %}
 
   {% elif field.type == "RadioField" %}
 
