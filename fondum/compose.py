@@ -54,7 +54,7 @@ def compose_dockers(args):
     dp = [f for f in docker_path.iterdir() if f.is_dir()]
     docker_site_directories = [d.name for d in dp if d.name.startswith("fondum_")]
     docker_sites = [d[7:] for d in docker_site_directories]
-    print(docker_sites)
+    print("    {}: {}".format(target_dir, docker_sites))
 
 
     if VERBOSE:

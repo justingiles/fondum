@@ -202,20 +202,20 @@ class BlogCatalog(PageCatalog):
 ########################################
 
 class DisplayPictureField(w.StringField):
-    def __init__(self, label='', validators=None, url=None, **kwargs):
-        super(w.StringField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, url=None, **kwargs):
+        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
         self.url = url
         self.data = url
 
 
 class DisplayTextField(w.StringField):
-    def __init__(self, label='', validators=None, **kwargs):
-        super(w.StringField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, **kwargs):
+        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class ButtonUrlField(w.StringField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.StringField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
 
 ##########################################
 #
@@ -224,81 +224,81 @@ class ButtonUrlField(w.StringField):
 ##########################################
 
 class BooleanField(w.BooleanField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.BooleanField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(BooleanField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class DateField(w.DateField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.DateField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(DateField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class DateTimeField(w.DateTimeField):
-    def __init__(self, label='', validators=None, format='%Y-%m-%d', href=None, **kwargs):
-        super(w.DateTimeField, self).__init__(label, validators, format, **kwargs)
+    def __init__(self, label=None, validators=None, format='%Y-%m-%d', href=None, **kwargs):
+        super(DateTimeField, self).__init__(label=label, validators=validators, format=format, **kwargs)
 
 
 class DecimalField(w.DecimalField):
-    def __init__(self, label='', validators=None, href=None, format='%Y-%m-%d %H:%M:%S', **kwargs):
-        super(w.DecimalField, self).__init__(label, validators, format, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, format='%Y-%m-%d %H:%M:%S', **kwargs):
+        super(DecimalField, self).__init__(label=label, validators=validators, format=format, **kwargs)
 
 
 class FileField(w.FileField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.FileField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(FileField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 # class MultipleFileField(w.MultipleFileField):
-#     def __init__(self, label='', validators=None, href=None, **kwargs):
-#         super(w.MultipleFileField, self).__init__(label, validators, **kwargs)
+#     def __init__(self, label=None, validators=None, href=None, **kwargs):
+#         super(MultipleFileField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class FloatField(w.FloatField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.FloatField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(FloatField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class IntegerField(w.IntegerField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.IntegerField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(IntegerField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class RadioField(w.RadioField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.RadioField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(RadioField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class SelectField(w.SelectField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.SelectField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
+        super(SelectField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
 
 
 class SelectMultipleField(w.SelectMultipleField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.SelectMultipleField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
+        super(SelectMultipleField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
 
 
 class SubmitField(w.SubmitField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.SubmitField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(SubmitField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class StringField(w.StringField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.StringField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(StringField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class HiddenField(w.HiddenField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.HiddenField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(HiddenField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class PasswordField(w.PasswordField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.PasswordField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(PasswordField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class TextAreaField(w.TextAreaField):
-    def __init__(self, label='', validators=None, href=None, **kwargs):
-        super(w.TextAreaField, self).__init__(label, validators, **kwargs)
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
+        super(TextAreaField, self).__init__(label=label, validators=validators, **kwargs)
 
