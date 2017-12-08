@@ -3,7 +3,7 @@
 
 {% block body %}
 
-{% from "formhelpers.html" import render_main_field %}
+{% from "formhelpers.html" import render_form_field, render_display_field %}
 
 <p>
     <div class="creole">
@@ -11,78 +11,60 @@
     </div>
 </p>
 
-{% if page.wtf %}
-  {% if page.wtf.process_form %}
 <br />
 <div>
+    {% if page.wtf and page.wtf.process_form %}
     <form action="" enctype="multipart/form-data" method="POST">
+    {% endif %}
       {% if page.wtf._form_style == "inline" %}
 
-          {% for field in page.wtf %}
+      <div class="formlist">
+        {% for field in page.wtf %}
 
-            {{ render_main_field(field, page.wtf._form_style) }}
-
-          {% endfor %}
-
-      {% else %}
-
-        <ul class="formlist">
-          {% for field in page.wtf %}
-
-          <li>
-            {{ render_main_field(field, page.wtf._form_style) }}
-          </li>
-
-          {% endfor %}
-        </ul>
-
-      {% endif %}
-    </form>
-</div>
-  {% else %}
-<div style="width: 100%;">
-    <dl>
-     {% for field in page.wtf %}
-      {% if field.type == "HiddenField" %}
-      {% elif field.type == "CSRFTokenField" %}
-      {% elif field.type == "ButtonUrlField" %}
-        {% if field.data %}
-          {% if field.href %}
-        <dt>
-            {{ field.label.text }}
-        </dt>
-        <dd>
-          <a href="{{field.href}}" class="btn">{{ field.data }}</a>
-        </dd>
+          {% if page.wtf and page.wtf.process_form %}
+            {{ render_form_field(field, page.wtf._form_style) }}
           {% else %}
-        <dt>
-            {{ field.label.text }}
-        </dt>
-        <dd>
-          {{ field.data }}
-        </dd>
+            {{ render_display_field(field, page.wtf._form_style) }}
           {% endif %}
-        {% endif %}
-      {% elif field.type == "DisplayPictureField" %}
-        <dt>
-            {{ field.label.text }}
-        </dt>
-        <dd>
-            <img src="{{ field.url }}" />
-        </dd>
+
+        {% endfor %}
+      </div>
+
+      {% elif page.wtf._form_style == "horizontal" %}
+
+      <div class="formlist">
+        {% for field in page.wtf %}
+
+          {% if page.wtf and page.wtf.process_form %}
+            {{ render_form_field(field, page.wtf._form_style) }}
+          {% else %}
+            {{ render_display_field(field, page.wtf._form_style) }}
+          {% endif %}
+
+        {% endfor %}
+      </div>
+
       {% else %}
-        <dt>
-            {{ field.label.text }}
-        </dt>
-        <dd>
-            {{ field.data | safe }}
-        </dd>
+
+      <ul class="formlist">
+        {% for field in page.wtf %}
+
+        <li>
+          {% if page.wtf and page.wtf.process_form %}
+            {{ render_form_field(field, page.wtf._form_style) }}
+          {% else %}
+            {{ render_display_field(field, page.wtf._form_style) }}
+          {% endif %}
+        </li>
+
+        {% endfor %}
+      </ul>
+
       {% endif %}
-     {% endfor %}
-    </dl>
+    {% if page.wtf and page.wtf.process_form %}
+    </form>
+    {% endif %}
 </div>
-  {% endif %}
-{% endif %}
 
 
 {% if page.has_tables %}

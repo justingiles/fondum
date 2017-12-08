@@ -1,6 +1,9 @@
-{% macro render_main_field(field, style) -%}
+{% macro render_form_field(field, style) -%}
 
   {% if style=="inline" %}
+    {% set sep_in = "" %}
+    {% set sep_out = "" %}
+  {% elif style=="horizontal" %}
     {% set sep_in = "" %}
     {% set sep_out = "" %}
   {% else %} {# "basic" #}
@@ -55,6 +58,12 @@
     {{ field(class_="autowidth") }}
   {{sep_out|safe}}
 
+  {% elif field.type == "DisplayPictureField" %}
+
+  {{sep_in|safe}}
+    <img src="{{ field.url }}" />
+  {{sep_out|safe}}
+
   {% else %}
 
   {{sep_in|safe}}
@@ -68,5 +77,82 @@
     <span style="color: red;">{{ error }} </span>
   {{sep_out|safe}}
   {% endfor %}
+
+{%- endmacro %}
+
+
+
+
+
+{% macro render_display_field(field, style) -%}
+
+  {% if style=="inline" %}
+    {% set sep_in = "" %}
+    {% set sep_out = "" %}
+  {% elif style=="horizontal" %}
+    {% set sep_in = "" %}
+    {% set sep_out = "" %}
+  {% else %} {# "basic" #}
+    {% set sep_in = "<p>" %}
+    {% set sep_out = "</p>" %}
+  {% endif %}
+
+  {#            LABEL FIELD         #}
+
+  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField", "ButtonUrlField"] %}
+  {% else %}
+  {{sep_in|safe}}
+      {% if style=="basic" %}<b>{% endif %}
+      <label for="{{field.short_name}}">{{ field.label }}</label>
+      {% if style=="basic" %}</b>{% endif %}
+  {{sep_out|safe}}
+  {% endif %}
+
+  {#            DATA FIELD         #}
+
+  {% if field.type in ["HiddenField", "CSRFTokenField"] %}
+     <!-- nothing -->
+  {% elif field.type in ["ButtonUrlField", "SubmitField"] %}
+
+  {{sep_in|safe}}
+    <a href="{{field.href}}" class="btn">{{ field.label }}</a>
+  {{sep_out|safe}}
+
+  {% elif field.type == "RadioField" %}
+
+  {{sep_in|safe}}
+    {% for value, label, _ in field.iter_choices() %}
+      {% if field.default==value %}&#9746;{% else %}&#9744;{% endif %}
+      {{ label }}
+      <br />
+    {% endfor %}
+  {{sep_out|safe}}
+
+  {% elif field.type == "BooleanField" %}
+
+  {{sep_in|safe}}
+    {% if field.data %}&#9746;{% else %}&#9744;{% endif %}
+    {{field.label}}
+  {{sep_out|safe}}
+
+  {% elif field.type == "DisplayPictureField" %}
+
+  {{sep_in|safe}}
+    <img src="{{ field.url }}" />
+  {{sep_out|safe}}
+
+  {% elif field.type == "TextAreaField" %}
+
+  {{sep_in|safe}}
+    <pre>{{ field.data }}</pre>
+  {{sep_out|safe}}
+
+  {% else %}
+
+  {{sep_in|safe}}
+    {{ field.data }}
+  {{sep_out|safe}}
+
+  {% endif %}
 
 {%- endmacro %}
