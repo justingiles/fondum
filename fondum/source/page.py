@@ -206,15 +206,17 @@ class BlogCatalog(PageCatalog):
 ########################################
 
 class DisplayPictureField(w.StringField):
-    def __init__(self, label=None, validators=None, url=None, **kwargs):
+    def __init__(self, label=None, validators=None, url=None, href=None, **kwargs):
         super(DisplayPictureField, self).__init__(label=label, validators=validators, **kwargs)
         self.url = url
         self.data = url
+        self.href = href
 
 
 class DisplayTextField(w.StringField):
-    def __init__(self, label=None, validators=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(DisplayTextField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class ButtonUrlField(w.StringField):
@@ -231,26 +233,31 @@ class ButtonUrlField(w.StringField):
 class BooleanField(w.BooleanField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(BooleanField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class DateField(w.DateField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(DateField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class DateTimeField(w.DateTimeField):
     def __init__(self, label=None, validators=None, format='%Y-%m-%d', href=None, **kwargs):
         super(DateTimeField, self).__init__(label=label, validators=validators, format=format, **kwargs)
+        self.href = href
 
 
 class DecimalField(w.DecimalField):
     def __init__(self, label=None, validators=None, href=None, format='%Y-%m-%d %H:%M:%S', **kwargs):
         super(DecimalField, self).__init__(label=label, validators=validators, format=format, **kwargs)
+        self.href = href
 
 
 class FileField(w.FileField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(FileField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 # class MultipleFileField(w.MultipleFileField):
@@ -261,49 +268,59 @@ class FileField(w.FileField):
 class FloatField(w.FloatField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(FloatField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class IntegerField(w.IntegerField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(IntegerField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class RadioField(w.RadioField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(RadioField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class SelectField(w.SelectField):
     def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
         super(SelectField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
+        self.href = href
 
 
 class SelectMultipleField(w.SelectMultipleField):
     def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
         super(SelectMultipleField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
+        self.href = href
 
 
 class SubmitField(w.SubmitField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(SubmitField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class StringField(w.StringField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(StringField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class HiddenField(w.HiddenField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(HiddenField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class PasswordField(w.PasswordField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(PasswordField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 
 
 class TextAreaField(w.TextAreaField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(TextAreaField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = href
 

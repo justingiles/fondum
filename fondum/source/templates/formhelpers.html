@@ -1,82 +1,129 @@
 {% macro render_form_field(field, style) -%}
 
-  {% if style=="inline" %}
-    {% set sep_in = "" %}
-    {% set sep_out = "" %}
-  {% elif style=="horizontal" %}
-    {% set sep_in = "" %}
-    {% set sep_out = "" %}
-  {% else %} {# "basic" #}
-    {% set sep_in = "<p>" %}
-    {% set sep_out = "</p>" %}
-  {% endif %}
+  {% if field.type in ["HiddenField", "CSRFTokenField"] %}
 
-  {#            LABEL FIELD         #}
-
-  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField", "ButtonUrlField"] %}
-  {% else %}
-  {{sep_in|safe}}
-      {% if style=="basic" %}<b>{% endif %}
-      <label for="{{field.short_name}}">{{ field.label }}</label>
-      {% if style=="basic" %}</b>{% endif %}
-  {{sep_out|safe}}
-  {% endif %}
-
-  {#            DATA FIELD         #}
-
-  {% if field.type == "DisplayTextField" %}
-
-  {{sep_in|safe}}
-      <b>{{ field.data }}</b>
-  {{sep_out|safe}}
-
-  {% elif field.type == "ButtonUrlField" %}
-
-  {{sep_in|safe}}
-    <a href="{{field.href}}" class="btn">{{ field.label }}</a>
-  {{sep_out|safe}}
-
-  {% elif field.type == "RadioField" %}
-
-  {{sep_in|safe}}
-    {% for value, label, _ in field.iter_choices() %}
-      <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="y"> {{ label }}
-      <br />
-    {% endfor %}
-  {{sep_out|safe}}
-
-  {% elif field.type == "BooleanField" %}
-
-  {{sep_in|safe}}
-    {{ field(class_="autowidth") }}
-    {{field.label}}
-  {{sep_out|safe}}
-
-  {% elif field.type in ["SubmitField"] %}
-
-  {{sep_in|safe}}
-    {{ field(class_="autowidth") }}
-  {{sep_out|safe}}
-
-  {% elif field.type == "DisplayPictureField" %}
-
-  {{sep_in|safe}}
-    <img src="{{ field.url }}" />
-  {{sep_out|safe}}
-
-  {% else %}
-
-  {{sep_in|safe}}
     {{ field }}
-  {{sep_out|safe}}
+
+  {% else %}
+
+    {% if style=="inline" %}
+      {% set lbl_in = '' %}
+      {% set lbl_out = ": " %}
+      {% set dat_in = '' %}
+      {% set dat_out = "" %}
+    {% elif style=="horizontal" %}
+      {% set lbl_in = '<div class="horizontal_form_label"><span class="pad6px">' %}
+      {% set lbl_out = "</span></div>" %}
+      {% set dat_in = '<div class="horizontal_form_data">' %}
+      {% set dat_out = "</div>" %}
+    {% else %} {# "basic" #}
+      {% set lbl_in = "<p>" %}
+      {% set lbl_out = "</p>" %}
+      {% set dat_in = "<p>" %}
+      {% set dat_out = "</p>" %}
+    {% endif %}
+
+    {% if field.href %}
+      {% set href_in = '<a href="'+field.href+'">' %}
+      {% set href_out = "</a>" %}
+    {% else %}
+      {% set href_in = "" %}
+      {% set href_out = "" %}
+    {% endif %}
+
+    {#            LABEL FIELD         #}
+
+    {% if style=="horizontal" %}
+    <div class="horizontal_form_row">
+    {% elif style=="inline" %}
+    <div class="inline_form_row">
+    {% endif %}
+    {% if field.type in ["SubmitField", "BooleanField", "ButtonUrlField"] %}
+    <!-- no label -->
+    {% else %}
+    {{lbl_in|safe}}
+      <b>
+        <label for="{{field.short_name}}">{{ field.label }}</label>
+      </b>
+    {{lbl_out|safe}}
+    {% endif %}
+
+    {#            DATA FIELD         #}
+
+    {% if field.type == "DisplayTextField" %}
+
+    {{dat_in|safe}}
+      <div class="{{style}}">
+        <div class="displaytextfield">
+        {{href_in|safe}}
+          {{ field.data }}
+        {{href_out|safe}}
+        </div>
+      </div>
+    {{dat_out|safe}}
+
+    {% elif field.type == "ButtonUrlField" %}
+
+    {{dat_in|safe}}
+      {{href_in|safe}}<span class="btn">{{ field.label }}</span>{{href_out|safe}}
+    {{dat_out|safe}}
+
+    {% elif field.type == "RadioField" %}
+
+    {{dat_in|safe}}
+      {% for value, label, _ in field.iter_choices() %}
+        <input class="autowidth" type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{value}}" {{"checked" if value==field.data}}>
+        {{href_in|safe}}      
+        {{ label }}
+        {{href_out|safe}}
+        {% if style != "inline" %}
+        <br />
+        {% endif %}
+      {% endfor %}
+    {{dat_out|safe}}
+
+    {% elif field.type == "BooleanField" %}
+
+    {{dat_in|safe}}
+      {{ field(class_="autowidth") }}
+      {{href_in|safe}}<b>{{field.label}}</b>{{href_out|safe}}
+    {{dat_out|safe}}
+
+    {% elif field.type in ["SubmitField"] %}
+
+    {{dat_in|safe}}
+      {{ field(class_="autowidth") }}
+    {{dat_out|safe}}
+
+    {% elif field.type == "DisplayPictureField" %}
+
+    {{dat_in|safe}}
+      {{href_in|safe}}
+      <img src="{{ field.url }}" />
+      {{href_out|safe}}
+    {{dat_out|safe}}
+
+    {% else %}
+
+    {{dat_in|safe}}
+      {{ field(class=style) }}
+    {{dat_out|safe}}
+
+    {% endif %}
+
+    {% for error in field.errors %}
+    {{dat_in|safe}}
+      <span style="color:red;">{{ error }} </span>
+    {{dat_out|safe}}
+    {% endfor %}
+
+    {% if style=="horizontal" %}
+    </div>
+    {% elif style=="inline" %}
+    </div>
+    {% endif %}
 
   {% endif %}
-
-  {% for error in field.errors %}
-  {{sep_in|safe}}
-    <span style="color: red;">{{ error }} </span>
-  {{sep_out|safe}}
-  {% endfor %}
 
 {%- endmacro %}
 
@@ -86,72 +133,104 @@
 
 {% macro render_display_field(field, style) -%}
 
-  {% if style=="inline" %}
-    {% set sep_in = "" %}
-    {% set sep_out = "" %}
-  {% elif style=="horizontal" %}
-    {% set sep_in = "" %}
-    {% set sep_out = "" %}
-  {% else %} {# "basic" #}
-    {% set sep_in = "<p>" %}
-    {% set sep_out = "</p>" %}
-  {% endif %}
-
-  {#            LABEL FIELD         #}
-
-  {% if field.type in ["SubmitField", "HiddenField", "CSRFTokenField", "BooleanField", "ButtonUrlField"] %}
-  {% else %}
-  {{sep_in|safe}}
-      {% if style=="basic" %}<b>{% endif %}
-      <label for="{{field.short_name}}">{{ field.label }}</label>
-      {% if style=="basic" %}</b>{% endif %}
-  {{sep_out|safe}}
-  {% endif %}
-
-  {#            DATA FIELD         #}
-
   {% if field.type in ["HiddenField", "CSRFTokenField"] %}
-     <!-- nothing -->
-  {% elif field.type in ["ButtonUrlField", "SubmitField"] %}
 
-  {{sep_in|safe}}
-    <a href="{{field.href}}" class="btn">{{ field.label }}</a>
-  {{sep_out|safe}}
-
-  {% elif field.type == "RadioField" %}
-
-  {{sep_in|safe}}
-    {% for value, label, _ in field.iter_choices() %}
-      {% if field.default==value %}&#9746;{% else %}&#9744;{% endif %}
-      {{ label }}
-      <br />
-    {% endfor %}
-  {{sep_out|safe}}
-
-  {% elif field.type == "BooleanField" %}
-
-  {{sep_in|safe}}
-    {% if field.data %}&#9746;{% else %}&#9744;{% endif %}
-    {{field.label}}
-  {{sep_out|safe}}
-
-  {% elif field.type == "DisplayPictureField" %}
-
-  {{sep_in|safe}}
-    <img src="{{ field.url }}" />
-  {{sep_out|safe}}
-
-  {% elif field.type == "TextAreaField" %}
-
-  {{sep_in|safe}}
-    <pre>{{ field.data }}</pre>
-  {{sep_out|safe}}
+    <!-- {{field.label}}: {{field.data}} -->
 
   {% else %}
 
-  {{sep_in|safe}}
-    {{ field.data }}
-  {{sep_out|safe}}
+    {% if style=="inline" %}
+      {% set lbl_in = "" %}
+      {% set lbl_out = ": " %}
+      {% set dat_in = "" %}
+      {% set dat_out = "" %}
+    {% elif style=="horizontal" %}
+      {% set lbl_in = '<div class="horizontal_form_label"><span class="pad6px">' %}
+      {% set lbl_out = "</span></div>" %}
+      {% set dat_in = '<div class="horizontal_form_data">' %}
+      {% set dat_out = "</div>" %}
+    {% else %} {# "basic" #}
+      {% set lbl_in = "<p>" %}
+      {% set lbl_out = "</p>" %}
+      {% set dat_in = "<p>" %}
+      {% set dat_out = "</p>" %}
+    {% endif %}
+
+    {% if field.href %}
+      {% set href_in = '<a href="'+field.href+'">' %}
+      {% set href_out = "</a>" %}
+    {% else %}
+      {% set href_in = "" %}
+      {% set href_out = "" %}
+    {% endif %}
+
+    {% if style=="horizontal" %}
+    <div class="horizontal_form_row">
+    {% endif %}
+
+    {#            LABEL FIELD         #}
+
+    {% if field.type in ["SubmitField", "BooleanField", "ButtonUrlField"] %}
+    {% else %}
+    {{lbl_in|safe}}
+      <b>
+        <label for="{{field.short_name}}">{{ field.label }}</label>
+      </b>
+    {{lbl_out|safe}}
+    {% endif %}
+
+    {#            DATA FIELD         #}
+
+    {{ href_in|safe }}
+
+    {% if field.type in ["ButtonUrlField", "SubmitField"] %}
+
+    {{dat_in|safe}}
+      <span class="btn">{{ field.label }}</span>
+    {{dat_out|safe}}
+
+    {% elif field.type == "RadioField" %}
+
+    {{dat_in|safe}}
+      {% for value, label, _ in field.iter_choices() %}
+        {% if field.default==value %}&#9746;{% else %}&#9744;{% endif %}
+        {{ label }}
+        <br />
+      {% endfor %}
+    {{dat_out|safe}}
+
+    {% elif field.type == "BooleanField" %}
+
+    {{dat_in|safe}}
+      {% if field.data %}&#9746;{% else %}&#9744;{% endif %}
+      <b>{{field.label}}</b>
+    {{dat_out|safe}}
+
+    {% elif field.type == "DisplayPictureField" %}
+
+    {{dat_in|safe}}
+      <img src="{{ field.url }}" />
+    {{dat_out|safe}}
+
+    {% elif field.type == "TextAreaField" %}
+
+    {{dat_in|safe}}
+      <pre>{{ field.data }}</pre>
+    {{dat_out|safe}}
+
+    {% else %}
+
+    {{dat_in|safe}}
+      {{ field.data }}
+    {{dat_out|safe}}
+
+    {% endif %}
+
+    {{ href_out|safe }}
+
+    {% if style=="horizontal" %}
+    </div>
+    {% endif %}
 
   {% endif %}
 

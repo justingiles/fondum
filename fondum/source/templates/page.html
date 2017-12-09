@@ -12,22 +12,26 @@
 </p>
 
 <br />
+
+{% if page.has_form %}
 <div>
-    {% if page.wtf and page.wtf.process_form %}
+    {% if page.wtf.process_form %}
     <form action="" enctype="multipart/form-data" method="POST">
     {% endif %}
       {% if page.wtf._form_style == "inline" %}
 
       <div class="formlist">
-        {% for field in page.wtf %}
+        <div class="inline_form">
+          {% for field in page.wtf %}
 
-          {% if page.wtf and page.wtf.process_form %}
-            {{ render_form_field(field, page.wtf._form_style) }}
-          {% else %}
-            {{ render_display_field(field, page.wtf._form_style) }}
-          {% endif %}
+            {% if page.wtf.process_form %}
+              {{ render_form_field(field, page.wtf._form_style) }}
+            {% else %}
+              {{ render_display_field(field, page.wtf._form_style) }}
+            {% endif %}
 
-        {% endfor %}
+          {% endfor %}
+        </div>
       </div>
 
       {% elif page.wtf._form_style == "horizontal" %}
@@ -35,7 +39,7 @@
       <div class="formlist">
         {% for field in page.wtf %}
 
-          {% if page.wtf and page.wtf.process_form %}
+          {% if page.wtf.process_form %}
             {{ render_form_field(field, page.wtf._form_style) }}
           {% else %}
             {{ render_display_field(field, page.wtf._form_style) }}
@@ -50,7 +54,7 @@
         {% for field in page.wtf %}
 
         <li>
-          {% if page.wtf and page.wtf.process_form %}
+          {% if page.wtf.process_form %}
             {{ render_form_field(field, page.wtf._form_style) }}
           {% else %}
             {{ render_display_field(field, page.wtf._form_style) }}
@@ -61,10 +65,11 @@
       </ul>
 
       {% endif %}
-    {% if page.wtf and page.wtf.process_form %}
+    {% if page.wtf.process_form %}
     </form>
     {% endif %}
 </div>
+{% endif %}
 
 
 {% if page.has_tables %}

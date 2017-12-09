@@ -106,6 +106,10 @@ td {
   margin:10px;
   list-style-type: none;
 }
+.displaytextfield {
+  border:1px solid;
+  padding:4px;
+}
 label {
   width:80%;
 }
@@ -115,11 +119,17 @@ select {
   border: 1px solid;
   border-radius: 4px;
 }
+select.inline{
+  width:auto;
+}
 textarea {
   width:100%;
   padding: 6px 12px;
   border: 1px solid;
   border-radius: 4px;
+}
+textarea.inline{
+  width:70%;
 }
 .autowidth {
   width:auto;
@@ -134,6 +144,47 @@ button {
   padding: 6px 12px;
   border: 1px solid;
   border-radius: 4px;
+}
+input.inline {
+  width: auto;
+}
+.horizontal_form_row {
+  width: 100%;
+  padding: 6px 6px;
+}
+.horizontal_form_row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.horizontal_form_label {
+  float:left;
+  width:20%;
+  text-align: right;
+}
+.horizontal_form_data {
+  float:right;
+  width:80%;
+}
+.inline {
+  width:auto;
+}
+.inline_form {
+  padding: 6px 6px;
+}
+.inline_form:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.inline_form_row {
+  float:left;
+  padding: 6px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.pad6px {
+  padding: 6px;
 }
 {% endif %}
 
@@ -256,7 +307,7 @@ dd {
    padding: 10px 0px 10px 0px;
 }
 
-a.btn {
+span.btn {
   -webkit-appearance: button;
   -moz-appearance: button;
   appearance: button;
