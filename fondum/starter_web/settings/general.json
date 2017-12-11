@@ -1,5 +1,5 @@
 {
-    "site_title": "{{DOMAIN}} Web Site",
+    "site_title": "123.test Web Site",
     "copyright": "&copy; X.",
     "rights": "Undefined License.",
     "index_def": "page_main_about",
@@ -41,8 +41,18 @@
             "submenus": [
                 {
                     "type": "link",
-                    "title": "All About {{DOMAIN}}",
+                    "title": "All About 123.test",
                     "url": "/main/about/"
+                },
+                {
+                    "type": "link",
+                    "title": "Example of All Page Elements",
+                    "url": "/main/example-of-everything/"
+                },
+                {
+                    "type": "link",
+                    "title": "Example Bypass Form",
+                    "url": "/main/bypass-form/"
                 }
             ]
         }
@@ -53,13 +63,13 @@
             "submenus": [
                 {
                     "type": "link",
-                    "title": "Create New {{DOMAIN}} Account",
+                    "title": "Create New 123.test Account",
                     "url": "/account/new/",
                     "logged_in": false
                 },
                 {
                     "type": "link",
-                    "title": "Login to {{DOMAIN}}",
+                    "title": "Login to 123.test",
                     "url": "/account/login/",
                     "logged_in": false
                 },
@@ -80,7 +90,7 @@
     ],
     "footer_links_right": [
         {
-            "title": "Special",
+            "title": "Special Bypass",
             "url": "/main/special/"
         }
     ]
