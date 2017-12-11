@@ -113,25 +113,9 @@
         {% else %}
           {% for row in page.display_table.rows %}
         <tr class="table-row">
-            {% for item in row.display_items() %}
+            {% for field in row.display_items() %}
             <td>
-                {{ ('<a href={}>'.format(item.url) if item.url) | safe }}
-                {% if item.type == "DateField" %}
-                {{ item.data | datefmt }}
-                {% elif item.type == "ButtonUrlField" %}
-                  {% if item.href %}
-                <a href="{{item.href}}" class="btn">{{ item.data }}</a>
-                  {% else %}
-                {{ item.data }}
-                  {% endif %}
-                {% else %}
-                  {% if item.safe %}
-                {{ item.data | safe }}
-                  {% else %}
-                {{ item.data }}
-                  {% endif %}
-                {% endif %}
-                {{ ('</a>' if item.url) | safe }}
+              {{ render_display_field(field, "table_basic") }}
             </td>
             {% endfor %}
         </tr>

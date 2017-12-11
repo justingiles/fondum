@@ -149,6 +149,11 @@
       {% set lbl_out = "</span></div>" %}
       {% set dat_in = '<div class="horizontal_form_data">' %}
       {% set dat_out = "</div>" %}
+    {% elif style=="table_basic" %}
+      {% set lbl_in = '' %}
+      {% set lbl_out = "" %}
+      {% set dat_in = '' %}
+      {% set dat_out = "" %}
     {% else %} {# "basic" #}
       {% set lbl_in = "<p>" %}
       {% set lbl_out = "</p>" %}
@@ -170,13 +175,15 @@
 
     {#            LABEL FIELD         #}
 
-    {% if field.type in ["SubmitField", "BooleanField", "ButtonUrlField"] %}
-    {% else %}
+    {% if not style=="table_basic" %}
+      {% if field.type in ["SubmitField", "BooleanField", "ButtonUrlField"] %}
+      {% else %}
     {{lbl_in|safe}}
       <b>
         <label for="{{field.short_name}}">{{ field.label }}</label>
       </b>
     {{lbl_out|safe}}
+      {% endif %}
     {% endif %}
 
     {#            DATA FIELD         #}
@@ -193,7 +200,7 @@
 
     {{dat_in|safe}}
       {% for value, label, _ in field.iter_choices() %}
-        {% if field.default==value %}&#9746;{% else %}&#9744;{% endif %}
+        {% if field.data==value %}&#9746;{% else %}&#9744;{% endif %}
         {{ label }}
         <br />
       {% endfor %}
@@ -203,7 +210,32 @@
 
     {{dat_in|safe}}
       {% if field.data %}&#9746;{% else %}&#9744;{% endif %}
+    {% if not style=="table_basic" %}
       <b>{{field.label}}</b>
+    {% endif %}
+    {{dat_out|safe}}
+
+    {% elif field.type == "SelectField" %}
+
+    {{dat_in|safe}}
+      {% for t in field.choices %}
+        {% if t.0==field.data %}
+    {{t.1}}
+        {% endif %}
+      {% endfor %}
+    {{dat_out|safe}}
+
+    {% elif field.type == "SelectMultipleField" %}
+
+    {{dat_in|safe}}
+      {% if field.data %}
+        {% for t in field.choices %}
+          {% if t.0 in field.data %}
+    {{t.1}}
+    <br />
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     {{dat_out|safe}}
 
     {% elif field.type == "DisplayPictureField" %}
@@ -216,6 +248,12 @@
 
     {{dat_in|safe}}
       <pre>{{ field.data }}</pre>
+    {{dat_out|safe}}
+
+    {% elif field.type == "PasswordField" %}
+
+    {{dat_in|safe}}
+      &#8226;&#8226;&#8226;
     {{dat_out|safe}}
 
     {% else %}
