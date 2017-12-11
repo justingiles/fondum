@@ -15,8 +15,13 @@ import random
 class About(Page):
 
     default_text = """
-==About 123.test
+==About {{DOMAIN}}
 """
+
+
+def mylookup():
+    return [("aa", "Dynamic A"), ("bb", "Dynamic B")]
+
 
 # url will be /main/example-of-everything/
 class ExampleOfEverything(Page):
@@ -52,7 +57,7 @@ They are (in order):
         fl = FloatField("My Float")
         i = IntegerField("My Integer")
         r = RadioField("My Radio", choices=[("x", "X"), ("y", "Y")], default="y")
-        sf = SelectField("My Select", choices=[("a", "A"), ("b", "B")])
+        sf = SelectField("My Select", choices=mylookup)
         sfm = SelectMultipleField("My Multiple Select", choices=[("c", "C"), ("d", "D")])
         s = StringField ("My String")
         h = HiddenField("My Hidden")

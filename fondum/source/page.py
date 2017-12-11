@@ -224,6 +224,7 @@ class ButtonUrlField(w.StringField):
         super(ButtonUrlField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
 
+
 ##########################################
 #
 #  NEW FEATURES FOR EXISTING WTFORMS FIELDS
@@ -287,12 +288,18 @@ class SelectField(w.SelectField):
     def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
         super(SelectField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
         self.href = href
+        if not hasattr(choices, '__iter__'):
+            if callable(choices):
+                self.choices = self.choices()
 
 
 class SelectMultipleField(w.SelectMultipleField):
     def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
         super(SelectMultipleField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
         self.href = href
+        if not hasattr(choices, '__iter__'):
+            if callable(choices):
+                self.choices = self.choices()
 
 
 class SubmitField(w.SubmitField):
