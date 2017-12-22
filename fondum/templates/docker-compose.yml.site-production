@@ -8,4 +8,4 @@
         links:
             - db
 
-        command: /usr/local/bin/gunicorn -w 2 -b :8001 app:app
+        command: /usr/local/bin/gunicorn -w 2 -b :8000 app:app
