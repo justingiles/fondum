@@ -1,0 +1,11 @@
+    fondum_{{site}}:
+        restart: always
+        build: ./fondum_{{site}}
+        ports:
+            - "8000"
+        volumes: ['./fondum_{{site}}:/site']
+        env_file: fondum_{{site}}.production.env
+        links:
+            - db
+
+        command: /usr/local/bin/gunicorn -w 2 -b :8001 app:app

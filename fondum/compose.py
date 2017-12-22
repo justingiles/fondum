@@ -1,17 +1,9 @@
-import argparse
 import os
-import shutil
-import sys
-from distutils import dir_util
 import json
 from pathlib import Path
-import re
 
 import supercopy
-from supercopy import SELF_NAME, NOW
-from supercopy import tabbed_text, size_split
-from utility import cmdline
-from migration import post_dot_fondum, dot_fondum
+from migration import dot_fondum
 
 
 def compose_dockers(args):
@@ -34,13 +26,13 @@ def compose_dockers(args):
     # gather website target source information
     #
     if VERBOSE:
-        print("d01 gathering details about website.")    
+        print("d01 gathering details about website.")
     details = dot_fondum(args.dir, "site")
     if details["result"] is not True:
         print("ERROR: {}".format(details["result"]))
         exit()
-    with open("{}/settings/docker.json".format(args.dir)) as f:
-        docker_detail = json.load(f)
+    with open("{}/settings/docker.json".format(args.dir)) as dd:
+        docker_detail = json.load(dd)
     target_docker = docker_detail["target"]
     target_dir = "docker_{}".format(target_docker)
     if VERBOSE:
@@ -49,32 +41,43 @@ def compose_dockers(args):
     # gather docker directory information
     #
     if VERBOSE:
-        print("d02 gathering details about docker.")    
+        print("d02 gathering details about docker.")
     docker_path = Path('./{}'.format(target_dir))
     dp = [f for f in docker_path.iterdir() if f.is_dir()]
     docker_site_directories = [d.name for d in dp if d.name.startswith("fondum_")]
     docker_sites = [d[7:] for d in docker_site_directories]
     print("    {}: {}".format(target_dir, docker_sites))
 
-
     if VERBOSE:
         print("d03 building docker-compose.yml.")
     with open("{}/templates/docker-compose.yml".format(args.library_path)) as f:
-        doc = f.read()
-    with open("{}/templates/docker-compose.yml.site".format(args.library_path)) as f:
-        site_template = f.read()
+        dev_doc = f.read()
+        prod_doc = dev_doc
+    with open("{}/templates/docker-compose.yml.site-development".format(args.library_path)) as f:
+        dev_site_template = f.read()
+    with open("{}/templates/docker-compose.yml.site-production".format(args.library_path)) as f:
+        prod_site_template = f.read()
     ext_template = "            - fondum_{{site}}"
-    site_import_text = ""
+    dev_site_import_text = ""
+    prod_site_import_text = ""
     ext_import_text = ""
     for site in docker_sites:
-        site_text = site_template.replace("{{site}}", site)
-        site_import_text += site_text
-        site_import_text += "\n"
+        # dev
+        site_text = dev_site_template.replace("{{site}}", site)
+        dev_site_import_text += site_text
+        dev_site_import_text += "\n"
+        # prod
+        site_text = prod_site_template.replace("{{site}}", site)
+        prod_site_import_text += site_text
+        prod_site_import_text += "\n"
+        # all
         ext_text = ext_template.replace("{{site}}", site)
         ext_import_text += ext_text
         ext_import_text += "\n"
-    doc = doc.replace("# {{{--INSERT-MARKER-1--}}}", site_import_text, 1)
-    doc = doc.replace("# {{{--INSERT-MARKER-2--}}}", ext_import_text, 1)
+    dev_doc = dev_doc.replace("# {{{--INSERT-MARKER-1--}}}", dev_site_import_text, 1)
+    dev_doc = dev_doc.replace("# {{{--INSERT-MARKER-2--}}}", ext_import_text, 1)
+    prod_doc = prod_doc.replace("# {{{--INSERT-MARKER-1--}}}", prod_site_import_text, 1)
+    prod_doc = prod_doc.replace("# {{{--INSERT-MARKER-2--}}}", ext_import_text, 1)
     manual_filename = "{}/docker-compose.yml.INCLUDE".format(target_dir)
     if not os.path.exists(manual_filename):
         with open(manual_filename, "w+") as f:
@@ -85,10 +88,12 @@ def compose_dockers(args):
             f.write("#       <site>/settings/docker.json file.\n")
     with open(manual_filename) as f:
         manually_added_text = f.read()
-    doc = doc.replace("# {{{--INSERT-MARKER-3--}}}", manually_added_text, 1)
+    dev_doc = dev_doc.replace("# {{{--INSERT-MARKER-3--}}}", manually_added_text, 1)
+    prod_doc = prod_doc.replace("# {{{--INSERT-MARKER-3--}}}", manually_added_text, 1)
     with open("{}/docker-compose.yml".format(target_dir), "w") as f:
-        f.write(doc)
-
+        f.write(dev_doc)
+    with open("{}/docker-compose-production.yml".format(target_dir), "w") as f:
+        f.write(prod_doc)
 
     nginx_site_dir = "{}/nginx/sites-enabled".format(target_dir)
     if VERBOSE:
@@ -107,14 +112,30 @@ def compose_dockers(args):
             f.write(nginx_text)
 
     if VERBOSE:
-        print("d05 building docker.")
-
+        print("d05 building empty env file if they don't exist.")
+    for site in docker_sites:
+        site_env_filename = "{}/fondum_{}.env".format(target_dir, site)
+        if not os.path.exists(site_env_filename):
+            if VERBOSE:
+                print("    > writing empty {}.".format(site_env_filename))
+            with open(site_env_filename, "w+") as f:
+                f.write("# place environment variables here\n")
+                f.write("# VAR=DATA FOR VAR\n")
+        site_env_filename = "{}/fondum_{}.production.env".format(target_dir, site)
+        if not os.path.exists(site_env_filename):
+            if VERBOSE:
+                print("    > writing empty {}.".format(site_env_filename))
+            with open(site_env_filename, "w+") as f:
+                f.write("# place environment variables here\n")
+                f.write("# VAR=DATA FOR VAR\n")
 
     if VERBOSE:
-        print("d06 checking for discrepancies in other dockers.")    
-
+        print("d06 building docker.")
 
     if VERBOSE:
-        print("d07 done with docker group composition.")
+        print("d07 checking for discrepancies in other dockers.")
+
+    if VERBOSE:
+        print("d08 done with docker group composition.")
 
 # eof

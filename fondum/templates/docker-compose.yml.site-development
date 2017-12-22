@@ -1,0 +1,10 @@
+    fondum_{{site}}:
+        restart: always
+        build: ./fondum_{{site}}
+        ports:
+            - "8000"
+        volumes: ['./fondum_{{site}}:/site']
+        env_file: fondum_{{site}}.env
+        links:
+            - db
+        command: python -u app.py DEVELOPMENT
