@@ -68,6 +68,18 @@
       {{href_in|safe}}<span class="btn">{{ field.label }}</span>{{href_out|safe}}
     {{dat_out|safe}}
 
+    {% elif field.type == "DateField" %}
+
+    {{dat_in|safe}}
+      {{ field(class_="datefield") }}
+    {{dat_out|safe}}
+
+    {% elif field.type == "DateTimeField" %}
+
+    {{dat_in|safe}}
+      {{ field(class_="datetimefield") }}
+    {{dat_out|safe}}
+
     {% elif field.type == "RadioField" %}
 
     {{dat_in|safe}}
@@ -254,6 +266,12 @@
 
     {{dat_in|safe}}
       &#8226;&#8226;&#8226;
+    {{dat_out|safe}}
+
+    {% elif field.type in ["DateTimeField", "DateField"] %}
+
+    {{dat_in|safe}}
+      {{ field.data|datefmt(fmt=field.format) }}
     {{dat_out|safe}}
 
     {% else %}

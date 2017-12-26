@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 import wtforms as w
+# import wtforms.fields.html5 as w5
 from wtforms.validators import InputRequired
 from app import g
 import copy

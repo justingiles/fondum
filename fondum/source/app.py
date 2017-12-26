@@ -52,6 +52,21 @@ def jinja2_escapejs_filter(value):
     return Markup("".join(retval))
 
 
+def jinja2_datetime(date, fmt='%Y-%m-%d', locale="en"):
+    if hasattr(date, "strftime"):
+        if fmt=="%Y-%m-%d":
+            return babel.dates.format_date(date, format="medium", locale=locale)
+        elif fmt=="%Y-%m-%d %H:%M:%S":
+            return babel.dates.format_datetime(date, format="medium", locale=locale)
+        else:
+            return babel.dates.format_datetime(date, format=fmt, locale=locale)
+    elif date:
+        return str(date)
+    else:
+        return ""
+
+
+
 CATEGORY_HTML = {
     "message": "&#x2709;",  # envelope
     "success": "&#x2713;",  # checkmark
@@ -81,8 +96,6 @@ def jinja2_USD(value, fmt=None, prec=2, dollar_sign=True):
     return fmt.format(value)
 
 
-def jinja2_datetime(date, locale="en"):
-    return babel.dates.format_date(date, locale=locale)
 
 
 os.environ['S3_USE_SIGV4'] = "1"
