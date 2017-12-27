@@ -115,6 +115,16 @@
       {{href_out|safe}}
     {{dat_out|safe}}
 
+    {% elif field.type == "StripeButtonField" %}
+
+    {{dat_in|safe}}
+      <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="{{ g.s_stripe_publishable_key }}"
+        data-description="{{field.description}}"
+        data-amount="{{field.amount}}"
+        data-locale="auto"></script>
+    {{dat_out|safe}}
+
     {% else %}
 
     {{dat_in|safe}}

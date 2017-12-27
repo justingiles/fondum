@@ -5,6 +5,7 @@ from wtforms.validators import InputRequired
 from app import g
 import copy
 import msg
+import stripe
 
 import admin__database
 
@@ -38,8 +39,11 @@ class Page(object):
         self.status = msg.error("page not processed")
         self.wtf = None
         # check for form
+        self.has_stripe = False
         if hasattr(self, "MainForm"):
             self.has_form = True
+            # TODO: check for Stripe Button for real
+            self.has_stripe = True
         else:
             self.has_form = False
             self.MainForm = None
@@ -224,6 +228,12 @@ class ButtonUrlField(w.StringField):
     def __init__(self, label=None, validators=None, href=None, **kwargs):
         super(ButtonUrlField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+
+
+class StripeButtonField(w.StringField):
+    def __init__(self, label=None, validators=None, href=None, description=None, amount=0.00, **kwargs):
+        super(StripeButtonField, self).__init__(label=label, validators=validators, **kwargs)
+        self.href = None # reject any href linkage
 
 
 ##########################################
