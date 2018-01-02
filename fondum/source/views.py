@@ -20,9 +20,12 @@ def favicon():
     )
 
 
-@app.route('/apic/<pic_key>.png')
-def display_article_picture(pic_key):
+@app.route('/apic/<pic_key>.<ext>')
+def display_article_picture(pic_key, ext):
     pic = database.read_articlePicture(pic_key)
+    fext = ext.lower()
+    if fext not in ["png", "svg", "jpg", "jpeg", "gif"]:
+        return abort(404)
     if pic:
         return static_proxy(pic.s_etag)
     return abort(404)
