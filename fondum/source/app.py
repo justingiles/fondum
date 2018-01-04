@@ -95,7 +95,17 @@ def jinja2_USD(value, fmt=None, prec=2, dollar_sign=True):
         fmt.replace("$", "", 1)
     return fmt.format(value)
 
-
+def jinja2_authtest(item):
+    li = item.get("logged_in", None)
+    if li is None:
+        return True
+    elif li==True:
+        if g.user.is_authenticated:
+            return True
+    else:
+        if not g.user.is_authenticated:
+            return True
+    return False
 
 
 os.environ['S3_USE_SIGV4'] = "1"
@@ -126,6 +136,8 @@ app.jinja_env.filters['category_icon'] = jinja2_category_icon_filter
 app.jinja_env.filters['creole_top'] = jinja2_creole_top
 app.jinja_env.filters['USD'] = jinja2_USD
 app.jinja_env.filters['datefmt'] = jinja2_datetime
+app.jinja_env.filters['authtest'] = jinja2_authtest
+
 
 qrcode = QRcode(app)
 

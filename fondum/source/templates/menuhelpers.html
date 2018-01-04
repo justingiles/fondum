@@ -1,0 +1,38 @@
+{% macro menu(item, side, index) -%}
+
+{% if item | authtest %}
+  {% if item.type in ["drop", "login"] %}
+
+<div class="header-{{side}}">
+  <button onclick="drophandler('drop{{side}}_{{index}}')" class="navbtn">
+    {% if item.type=="login" %}
+    {{g.display_name|safe}}
+    {% else %}
+    {{item.title}}
+    {%endif %}
+  </button>
+
+  <div id="drop{{side}}_{{index}}" class="dropdown-content">
+    {% for submenu in item.submenus %}
+      {% if submenu | authtest %}
+    <a href="{{submenu.url}}" class="navsub">{{submenu['title']}}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+  {% else %}
+
+<div class="header-{{side}}">
+  <a href="{{item.url}}">
+    <button class="navbtn">{{item.title}}</button>
+  </a>
+</div>
+
+  {% endif %}
+
+{% endif %}
+
+{%- endmacro %}
+
+

@@ -1,4 +1,5 @@
 <html>
+{% from "menuhelpers.html" import menu %}
  <head>
   <title>{{g.s["site_title"]}}</title>
   <meta name="viewport" content="width=device-width, maximum-scale=1, minimum-scale=1" />
@@ -368,60 +369,10 @@ span.btn {
        </a>
       </div>
       {% for div in g.s["menus_left"] %}
-       {% if div["type"] == "drop" %}
-      <div class="header-left">
-        <button onclick="drophandler('dropleft_{{loop.index}}')" class="navbtn">{{div["title"]}}</button>
-        <div id="dropleft_{{loop.index}}" class="dropdown-content">
-         {% for submenu in div["submenus"] %}
-         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
-         {% endfor %}
-        </div>
-      </div>
-       {% else %}
-      <div class="header-left">
-       <a href="{{div['url']}}">
-        <button class="navbtn">{{div["title"]}}</button>
-       </a>
-      </div>
-       {% endif %}
+        {{ menu(div, "left", loop.index) }}
       {% endfor %}
       {% for div in g.s["menus_right"] | reverse %}
-       {% if div["type"] == "drop" %}
-      <div class="header-right">
-        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{div["title"]}}</button>
-        <div id="dropright_{{loop.index}}" class="dropdown-content">
-         {% for submenu in div["submenus"] %}
-         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
-         {% endfor %}
-        </div>
-      </div>
-       {% elif div["type"] == "login" %}
-        {% if g.user.is_authenticated %}
-      <div class="header-right">
-        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{g.display_name|safe}}</button>
-        <div id="dropright_{{loop.index}}" class="dropdown-content">
-         {% for submenu in div["submenus"] if submenu.logged_in==True %}
-         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
-         {% endfor %}
-        </div>
-      </div>
-        {% else %}
-      <div class="header-right">
-        <button onclick="drophandler('dropright_{{loop.index}}')" class="navbtn">{{g.display_name|safe}}</button>
-        <div id="dropright_{{loop.index}}" class="dropdown-content">
-         {% for submenu in div["submenus"] if submenu.logged_in==False %}
-         <a href="{{submenu['url']}}" class="navsub">{{submenu['title']}}</a>
-         {% endfor %}
-        </div>
-      </div>
-        {% endif %}
-       {% else %}
-      <div class="header-right">
-       <a href="{{div['url']}}">
-        <button class="navbtn">{{div["title"]}}</button>
-       </a>
-      </div>
-       {% endif %}
+        {{ menu(div, "right", loop.index) }}
       {% endfor %}
       <div style="clear: both;"></div>
      </div>
