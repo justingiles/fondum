@@ -1,0 +1,5 @@
+# the following lines should contain extra PIP requirements
+# as one would see in a 'pip freeze' output.
+#
+# if a line here conflicts with fondum's requirements, then this file
+# overrides the 'fondum_requirements.txt' file.

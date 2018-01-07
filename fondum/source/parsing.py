@@ -14,6 +14,11 @@ macros = {
 }
 
 
+def creole2html(creole_text):
+    html = cr.creole2html(creole_text, macros=macros)
+    return html
+
+
 def generate_html(article, page=None):
     default_text = getattr(page, "default_text", None)
     article_text = getattr(article, "s_creole_text", None)
@@ -24,7 +29,7 @@ def generate_html(article, page=None):
         if use_jinja:
             template = Template(article_text)
             article_text = template.render(default_text_data)
-        src = cr.creole2html(article_text, macros=macros)
+        src = creole2html(article_text)
         src += "\n<br/>\n"
     elif default_text:
         if use_jinja:
