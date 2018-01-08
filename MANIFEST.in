@@ -1,5 +1,5 @@
 include LICENSE README.md
-include fondum_requirements.txt
+include fondum/fondum_requirements.txt
 recursive-include fondum/source *
 recursive-include fondum/templates *
 recursive-include fondum/starter_web *
