@@ -1,5 +1,8 @@
 version: '3'
 
+volumes:
+   datavolume:
+
 services:
 
     site:
@@ -28,4 +31,6 @@ services:
             - site
 
     db:
+        volumes:
+            - datavolume:/data/db
         image: mongo:3.0.2
