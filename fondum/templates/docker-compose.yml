@@ -1,11 +1,16 @@
 version: '3'
 
+volumes:
+   datavolume:
+
 services:
 
 # {{{--INSERT-MARKER-1--}}}
 
     db:
         image: mongo:3.0.2
+        volumes:
+            - datavolume:/data/db
 
     nginx:
         restart: always
