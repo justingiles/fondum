@@ -53,6 +53,11 @@
                     "type": "link",
                     "title": "Example Bypass Form",
                     "url": "/main/bypass-form/"
+                },
+                {
+                    "type": "link",
+                    "title": "Example Of The Sendmail Feature",
+                    "url": "/main/example-sendmail/"
                 }
             ]
         }

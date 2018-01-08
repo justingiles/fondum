@@ -1,5 +1,6 @@
 import sendgrid
 import sendgrid.helpers.mail as h
+import python_http_client as sg_except
 import parsing
 import msg
 from flask import current_app
@@ -59,9 +60,8 @@ def sendmail(group_id, to_addr=None, creole_text=None, html=None, subject=None, 
         )
         message.asm = h.ASM(group_id)
         response = sg.client.mail.send.post(request_body=message.get())
+    except sg_except.UnauthorizedError as e:
+        return msg.bug("SENDGRID unauthorized error (check SENDGRID_API_KEY): {}".format(str(e)))
     except Exception as e:
-        return msg.bug("SENDGRID general error {}".format(e))
-    # print(response.status_code)
-    # print(response.body)
-    # print(response.headers)
+        return msg.bug("SENDGRID general error: {}".format(str(e)))
     return msg.success("Message sent to {}".format(to_header))

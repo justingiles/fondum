@@ -56,7 +56,9 @@ class Config(BaseConfig):
     # SendGrid details
     #
     HAS_SENDMAIL = False
-    SENDGRID_NGROUP_LIST = []
+    SENDGRID_UNSUBSCRIBE_GROUPS = {
+        1: "Announcements",
+    }
     SENDGRID_DEFAULT_FROM_ADDRESS = None
     SENDGRID_DEFAULT_SUBJECT = None
     SENDGRID_API_KEY = "to-be-determined"

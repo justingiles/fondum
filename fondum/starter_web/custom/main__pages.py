@@ -10,6 +10,7 @@ from page import Page, PageForm, PageTable, \
 from flask import render_template, render_template_string
 import datetime
 import random
+from sendmail import sendmail
 
 # /main/about/
 class About(Page):
@@ -204,3 +205,48 @@ class SpecialWithParm__myparm(Page):
 
     def fondum_bypass(self, **kwargs):
         return render_template("special-with-parm.html", kwargs=kwargs)
+
+
+# /main/example-sendmail/
+class ExampleSendmail(Page):
+
+    default_text = """
+==== Examples of Extended Features
+== Sendmail
+
+The example below shows the //sendmail// feature of fondum. By default, this 
+extended feature is turned off.
+
+The example is kind of silly. Generally, one would never allow the general public
+to send emails. It is strictly for demonstraction. In practice, you would use the function
+more subtley and with greater restrictions.
+
+** Currently uses //sendgrid// commercial service; which includes a free tier.
+"""
+
+    class MainForm(PageForm):
+
+        msg_to = DisplayTextField("To:")
+        msg_from = StringField("From:")
+        msg_subject = StringField("Subject:")
+        msg_text = TextAreaField("Body (with creole markup):")
+        submit = SubmitField("Send An Email")
+
+        def set_starting_values(self, **kwargs):
+            self.msg_to.data = "test@example.com"
+
+        def process_form(self, wtf, **kwargs):
+            #
+            # this is where any database processing would happen
+            #
+            result_msg = sendmail(
+                1,
+                to_addr="test <test@example.com>",
+                creole_text=self.msg_text.data, 
+                subject=self.msg_subject.data, 
+                from_addr=self.msg_from.data,
+            )
+            return result_msg
+
+
+# eof
