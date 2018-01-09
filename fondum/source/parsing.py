@@ -15,7 +15,7 @@ macros = {
 
 
 def creole2html(creole_text):
-    html = cr.creole2html(creole_text, macros=macros)
+    html = cr.creole2html(unicode(creole_text), macros=macros)
     return html
 
 

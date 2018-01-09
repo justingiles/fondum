@@ -21,7 +21,7 @@ from flask import current_app
     # SENDGRID_DEFAULT_SUBJECT = None
     # SENDGRID_API_KEY = "to-be-determined"
 
-def sendmail(group_id, to_addr=None, creole_text=None, html=None, subject=None, from_addr=None):
+def sendmail(group_id, to_addr=None, plain_text=None, creole_text=None, html=None, subject=None, from_addr=None):
     config = current_app.config
     #
     # do sanity checks first
@@ -39,10 +39,15 @@ def sendmail(group_id, to_addr=None, creole_text=None, html=None, subject=None, 
     subject_header = subject or config.get("SENDGRID_DEFAULT_SUBJECT", None)
     if not from_header:
         return msg.bug("missing subject.")
+    if plain_text:
+        body = plain_text
+        mimetype = "text/plain"
     if creole_text:
         body = parsing.creole2html(creole_text)
+        mimetype = "text/html"
     if html:
         body = html
+        mimetype = "text/html"
     if not body:
         return msg.bug("missing body contents (via 'creole_text' or 'html' parameters.")
     #
@@ -56,7 +61,7 @@ def sendmail(group_id, to_addr=None, creole_text=None, html=None, subject=None, 
             h.Email(from_header),
             subject_header,
             h.Email(to_header),
-            h.Content("text/html", body)
+            h.Content(mimetype, body)
         )
         message.asm = h.ASM(group_id)
         response = sg.client.mail.send.post(request_body=message.get())
