@@ -57,6 +57,10 @@ def page_handler(page, source_def, key, **kwargs):
         if not current_user.is_authenticated:
             msg.flash('You must be logged in.', t="warning")
             return redirect(url_for('index'))
+    if page.admin_required:
+        if not g.admin_flag:
+            msg.flash('You must be an administrator.', t="warning")
+            return redirect(url_for('index'))
     #
     # handle purposeful bypass
     #

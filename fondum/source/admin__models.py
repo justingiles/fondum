@@ -11,7 +11,7 @@ db = MongoEngine()
 
 
 class User(db.Document):
-    s_email = db.StringField()
+    s_email = db.StringField()         # this is currently a reference email used for admin flag
     s_password = db.StringField(max_length=200)
     #
     s_oauth_email = db.StringField()
@@ -35,6 +35,10 @@ class User(db.Document):
     @property
     def is_anonymous(self):
         return False
+
+    @property
+    def authenticated_email(self):
+        return str(self.s_email)
 
     meta = {'strict': False}
 

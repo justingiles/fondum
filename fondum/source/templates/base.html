@@ -6,6 +6,9 @@
   {% if g.s["font"].external %}
   <link rel="stylesheet" href="{{g.s["font"].external}}">
   {% endif %}
+  {% if g.flattr_id %}
+  <meta name="flattr:id" content="{{g.flattr_id}}">
+  {% endif %}
   <style>
 .header-left {
   margin-right: 16px;

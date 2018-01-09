@@ -1,7 +1,9 @@
-from baseconfig import BaseConfig
+import os
 
+class BaseConfig(object):
+    DEBUG = True
+    TESTING = True
 
-class Config(BaseConfig):
     SECRET_KEY = 'put secret key here'
     HOST = '0.0.0.0'
     PORT = 8000
@@ -53,26 +55,15 @@ class Config(BaseConfig):
     HAS_TIPPING = False
     FLATTR_ID = "to-be-determined"
 
+    def pull_from_environment(self):
+        print("CONFIG: examining environment.")
+        class_attribs = [v for v in dir(self) if not callable(getattr(self, v)) and not v.startswith("__")]
+        # print(class_attribs)
+        for key in class_attribs:
+            if key in os.environ:
+                setattr(self, key, os.environ[key])
+                print("CONFIG: {} pulled from environment = {}".format(key, os.environ[key]))
+            else:
+                print("CONFIG: {} pulled locally.".format(key))
 
 
-class ProductionConfig(Config):
-    DEBUG = False
-    TESTING = False
-    # MONGODB_DB = 'numberposting'
-    # MONGODB_PASSWORD = 'xxxxxxxxx'
-    # MONGODB_HOST = "mongodb://numberpostingsite:{}@".format(MONGODB_PASSWORD) + \
-    #     "clusterX-shard-0.domain.com:27017," + \
-    #     "clusterX-shard-1.domain.com:27017," + \
-    #     "clusterX-shard-2.domain.com:27017/" + \
-    #     "{}?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin".format(MONGODB_DB)
-    # HOST = '0.0.0.0'
-
-
-class DevelopmentConfig(Config):
-    DEBUG = True
-
-
-class TestingConfig(Config):
-    TESTING = True
-
-# eof

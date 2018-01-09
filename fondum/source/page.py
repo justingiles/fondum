@@ -13,6 +13,7 @@ import admin__database
 class Page(object):
 
     login_required = False
+    admin_required = False
     table_order = []
     default_text = None
     only_use_default_text = False

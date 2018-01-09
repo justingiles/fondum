@@ -1,5 +1,5 @@
 from app import app, login_manager, nav_icon, google
-from flask import g, redirect, url_for, session
+from flask import g, redirect, url_for, session, current_app
 from flask_login import logout_user, current_user, login_user
 import msg
 from jcfs_settings import s
@@ -15,6 +15,22 @@ import account__database
 #
 
 
+def determine_admin_flag(user, account):
+    '''
+    Adjust this function to match up with however you feel most comfortable
+    determining who is an administrator. Used by 'def before_request()' below
+    to set g.admin_flag.
+
+    By default, it is written to look in the Flask config (settings/flask-settings.py)
+    for setting called 'AUTH_ACCOUNTS'. The safest way to set that list is by
+    overriding the value with a Docker environment variable by the same name. See
+    documentation for details.
+    '''
+    if user.authenticated_email in current_app.config['AUTH_EMAILS']:
+        return True
+    return False
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return database.read_user(user_id)
@@ -25,12 +41,20 @@ def before_request():
     g.user = current_user
     g.s = s
     g.nav_icon = nav_icon
+    g.admin_flag = False
+    if current_app.config['HAS_TIPPING']:
+        g.flattr_id = current_app.config['FLATTR_ID']
+    else:
+        g.flattr_id = None
     if g.user.is_authenticated:
         g.account = account__database.read_account_byUser(g.user)
         g.display_name = g.account.s_name  # required
+        g.account_id = g.account.id
+        g.admin_flag = determine_admin_flag(g.user, g.account)
     else:
         g.account = None
         g.display_name = "Anonymous"  # required
+        g.account_id = None
 
 
 @app.route('/logout/')

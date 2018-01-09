@@ -15,7 +15,8 @@ from decimal import Decimal
 # /admin/main
 class Main(Page):
 
-    # login_required = True
+    login_required = True
+    admin_required = True
 
     default_text = """
 == Admin Page
@@ -101,6 +102,9 @@ class Main(Page):
 # /admin/article/<pkey>
 class Article__pkey(Page):
 
+    login_required = True
+    admin_required = True
+
     default_text = """
 == Admin
 === Article Edit/Create
@@ -151,6 +155,9 @@ class Article__pkey(Page):
 # /admin/article-delete/<pkey>
 class ArticleDelete__pkey(Page):
 
+    login_required = True
+    admin_required = True
+
     default_text = """
 == Admin
 === Article Deletion
@@ -181,6 +188,9 @@ class ArticleDelete__pkey(Page):
 
 # /admin/picture/<pkey>
 class Picture__pkey(Page):
+
+    login_required = True
+    admin_required = True
 
     default_text = """
 == Admin
@@ -218,6 +228,9 @@ class Picture__pkey(Page):
 
 # /admin/product/<pkey>
 class Product__pkey(Page):
+
+    login_required = True
+    admin_required = True
 
     default_text = """
 == Admin
@@ -265,6 +278,9 @@ class Product__pkey(Page):
 
 # /admin/product-delete/<pkey>
 class ProductDelete__pkey(Page):
+
+    login_required = True
+    admin_required = True
 
     default_text = """
 == Admin
