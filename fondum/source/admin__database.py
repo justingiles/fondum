@@ -32,9 +32,9 @@ def create_user_byOAuth(email, authid, source):
     except db.DoesNotExist:
         found_duplicate = False
     except db.MultipleObjectsReturned:
-        return msg.bug("Internal error: multiple users found. Contact PSG.")
+        return msg.bug("Internal error: multiple users found. Please contact us.")
     if found_duplicate:
-        return msg.bug("Contact Hexgame, duplicate emails found.")
+        return msg.bug("Please contact us, duplicate emails found.")
     #
     # create
     #
@@ -61,7 +61,7 @@ def read_user_byOAuth(email, authid, source):
     try:
         user = models.User.objects.get(s_oauth_email=email, s_oauth_id=authid, s_oauth_source=source)
     except db.DoesNotExist:
-        user = msg.err("Account does not exist on Hexgame.")
+        user = msg.err("Account does not exist.")
     return user
 
 
@@ -167,6 +167,7 @@ def read_articleList(list_type="all"):
         lst.save()
     return lst
 
+
 def read_articleList_asProducts(list_type="blog"):
     unsorted = []
     al = read_articleList(list_type=list_type)
@@ -227,12 +228,14 @@ def read_articlePicture(key):
     return p
 
 
+
 def readlist_articlePictures():
     try:
         apl = models.ArticlePicture.objects
     except db.DoesNotExist:
         apl = []
     return apl
+
 
 
 def upsert_articlePicture(key, wtf, details):
