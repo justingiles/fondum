@@ -47,13 +47,13 @@ SECURITY = 3   # security exception! this type of error should never normally ha
 
 
 class FlashEvent(object):
-    def init(self):
+    def __init__(self):
         self.message = ""
         self.event_type = DEFAULT
         self.level = DISPLAY
         self.return_def = None
         self.return_def_parms = {}
-        self.I_AM_A_FLASH_EVENT = True
+        self.flash_event = True
 
     def __repr__(self):
         return "<FlashEvent type={} level={}>".format(
@@ -164,8 +164,8 @@ def security(msg, level=SECURITY, return_def=None, **kwargs):
 def is_flashEvent(flash_event):
     if isinstance(flash_event, FlashEvent):
         return True
-    if hasattr(flash_event, "I_AM_A_FLASH_EVENT"):
-        return flash_event.I_AM_A_FLASH_EVENT
+    if hasattr(flash_event, "flash_event"):
+        return flash_event.flash_event
     return False
 
 def is_msg(flash_event):
