@@ -9,6 +9,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 from flask_qrcode import QRcode
 from flask_oauthlib.client import OAuth
+import logging
 import os
 import sys
 import babel
@@ -159,6 +160,9 @@ from login_handler import *
 from views import *
 
 if __name__ == '__main__':
+    logger = logging.getLogger(app.config.get("domain", "fondum"))
+    logger.setLevel(app.config.get("LOGGING_LEVEL",logging.WARNING))
+    # logger.addHandler(msg.MongoHandler)
     app.debug = app.config['DEBUG']
     app.run(host=app.config['HOST'], port=app.config['PORT'])
 

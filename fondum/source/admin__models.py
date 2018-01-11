@@ -1,5 +1,6 @@
 from flask_mongoengine import MongoEngine
 import datetime
+import flask
 
 db = MongoEngine()
 
@@ -123,6 +124,75 @@ class Product(db.Document):
     arr_categories = db.ListField(db.StringField())
 
     meta = {'strict': False}
+
+
+#####################################
+#
+#    LOGGING
+#
+#####################################
+
+# the following MUST be a duplicate of the constants found in msg.py
+
+FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
+
+LOG_DEBUG = 0             # See Python "logging" for general interpretation
+LOG_INFO = 1              # as a general rule, these levels match up with the PRESENTATION display_levels below
+LOG_WARNING = 2
+LOG_ERROR = 3
+LOG_CRITICAL = 4
+
+LOG_LEVEL_MAP = [10, 20, 30, 40, 50]
+LOG_DESCRIPTION = {
+    LOG_DEBUG: "DEBUG",
+    LOG_INFO: "LOG_WARNING",
+    LOG_WARNING: "WARNING",
+    LOG_ERROR: "ERROR",
+    LOG_CRITICAL: "CRITICAL"
+}
+
+DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
+DISP_SHOW = 1             # show to end-user; this is the default level
+DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive
+DISP_REVIEW = 3           # this is an error that should be shown to user and fixed and/or reviewed by programmer
+DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
+
+DISP_DESCRIPTION = {
+    DISP_LOG: "LOG",
+    DISP_SHOW: "SHOW",
+    DISP_WARNING: "WARNING",
+    DISP_REVIEW: "REVIEW",
+    DISP_SECURITY_ALERT: "SECURITY_ALERT",
+}
+
+class Logs(db.Document):
+    dt_created = db.DateTimeField(required=True, default=datetime.datetime.now)
+    s_domain = db.StringField()
+    s_src = db.StringField()
+    s_event_type = db.StringField()
+    n_display_level = db.IntField()
+    s_display_level = db.StringField()
+    n_log_level = db.IntField()
+    s_log_level = db.StringField()
+    s_return_def = db.StringField()
+    s_return_def_parms = db.StringField()
+    s_logger_string = db.StringField()
+ 
+    def pull_from_FlashEvent(self, fe):
+        self.s_domain = flask.current_app.config.get("domain", "fondum")
+        self.s_event_type = FLASK_CAT_LIST[fe.event_type]
+        self.n_display_level = fe.display_level
+        self.s_display_level = DISP_DESCRIPTION[fe.display_level]
+        self.n_log_level = fe.log_level
+        self.s_log_level = LOG_DESCRIPTION[fe.log_level]
+        self.s_return_def = fe.return_def
+        self.s_return_def_parms = str(fe.return_def_parms)
+        self.s_src = "flash"
+
+    def pull_from_logger(self, record, msg):
+        self.s_domain = flask.current_app.config.get("domain", "fondum")
+        self.s_logger_string = msg
+        self.s_src = "logger"
 
 
 # eof

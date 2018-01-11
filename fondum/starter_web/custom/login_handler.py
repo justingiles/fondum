@@ -33,7 +33,10 @@ def determine_admin_flag(user, account):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return database.read_user(user_id)
+    user = database.read_user(user_id)
+    if msg.is_bad(user):
+        g.user.is_authenticated = False
+    return user
 
 
 @app.before_request

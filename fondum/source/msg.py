@@ -1,12 +1,17 @@
 import flask
 import babelfish
+import logging
 
-#################################
-#
-#   Flask Messaging/Flash Support Functions
-#
-#################################
 
+###################################
+#
+#    CONSTANTS
+#
+###################################
+
+#
+# DISPLAY CATEGORY TYPES
+#
 DEFAULT = 0
 SUCCESS = 1
 INFO = 2
@@ -18,7 +23,7 @@ MSG_FLASK_CAT = {
     SUCCESS: "success",
     INFO: "info",
     WARNING: "warning",
-    DANGER: "danger"    
+    DANGER: "danger"
 }
 FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
 
@@ -38,27 +43,81 @@ MSG_FOREGROUND = {
     DANGER: "White"
 }
 
-# flash levels:
 #
-LOG_ONLY = 0   # send to logs, if logs are stored, but not to end-user
-DISPLAY = 1    # show to end-user; this is the default level
-ERROR = 2      # this is an error that should be looked at eventually
-SECURITY = 3   # security exception! this type of error should never normally happen
+# LOGGING LEVELS
+#
+LOG_DEBUG = 0             # See Python "logging" for general interpretation
+LOG_INFO = 1              # as a general rule, these levels match up with the PRESENTATION display_levels below
+LOG_WARNING = 2
+LOG_ERROR = 3
+LOG_CRITICAL = 4
 
+LOG_LEVEL_MAP = [10, 20, 30, 40, 50]
+LOG_DESCRIPTION = {
+    LOG_DEBUG: "DEBUG",
+    LOG_INFO: "LOG_WARNING",
+    LOG_WARNING: "WARNING",
+    LOG_ERROR: "ERROR",
+    LOG_CRITICAL: "CRITICAL"
+}
+
+#
+# PRESENTATION
+#
+DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
+DISP_SHOW = 1             # show to end-user; this is the default level
+DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive
+DISP_REVIEW = 3           # this is an error that should be shown to user and fixed and/or reviewed by programmer
+DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
+
+DISP_DESCRIPTION = {
+    DISP_LOG: "LOG",
+    DISP_SHOW: "SHOW",
+    DISP_WARNING: "WARNING",
+    DISP_REVIEW: "REVIEW",
+    DISP_SECURITY_ALERT: "SECURITY_ALERT",
+}
+
+
+#################################
+#
+#   LOGGING
+#
+#################################
+
+class MongoHandler(logging.Handler):
+
+    def emit(self, record):
+        import admin_database
+        msg = self.format(record)
+        admin_database.create_log(record, msg)
+        return True
+
+
+
+#################################
+#
+#   Flask Messaging/Flash Support Functions
+#
+#################################
 
 class FlashEvent(object):
     def __init__(self):
         self.message = ""
         self.event_type = DEFAULT
-        self.level = DISPLAY
+        self.display_level = DISP_SHOW
+        self.log_level = LOG_LEVEL_MAP[LOG_INFO]
         self.return_def = None
         self.return_def_parms = {}
         self.flash_event = True
 
+    def logger_level(self):
+        return LOG_LEVEL_MAP[self.log_level]
+
     def __repr__(self):
         return "<FlashEvent type={} level={}>".format(
             MSG_FLASK_CAT[self.event_type],
-            self.level
+            self.display_level
         )
 
 
@@ -68,51 +127,56 @@ def is_msg(test_object):
     return False
 
 
-def msg(msg, level=DISPLAY, return_def=None, **kwargs):
+def msg(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DEFAULT
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def note(msg, level=LOG_ONLY, return_def=None, **kwargs):
+def note(msg, level=DISP_LOG, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DEFAULT
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def success(msg, level=DISPLAY, return_def=None, **kwargs):
+def success(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = SUCCESS
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def info(msg, level=DISPLAY, return_def=None, **kwargs):
+def info(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = INFO
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def warning(msg, level=DISPLAY, return_def=None, **kwargs):
+def warning(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = WARNING
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -122,28 +186,33 @@ def warning(msg, level=DISPLAY, return_def=None, **kwargs):
 # password or using incorrect data in a field would generate an err. That is,
 # having an 'err' occur is fully expected. The user simply needs to know that the
 # operation failed.
-def err(msg, level=DISPLAY, return_def=None, **kwargs):
+def err(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
+
 
 def error(*args, **kwargs):
     return err(*args, **kwargs)
 
+
 #
 # used to return events that shouldn't ever really happen. i.e. a software bug
-def bug(msg, level=ERROR, return_def=None, **kwargs):
+def bug(msg, level=DISP_REVIEW, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
+
 
 # this is used to return events that indicate a possible security breach. Often
 # used when checking for conditions that should be impossible to happen.
@@ -152,14 +221,16 @@ def bug(msg, level=ERROR, return_def=None, **kwargs):
 # that the URL exists at all. So, an outsider accessing it ISNT a bug per se. But it
 # is a serious security warning.
 #
-def security(msg, level=SECURITY, return_def=None, **kwargs):
+def security(msg, level=DISP_SECURITY_ALERT, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.level = level
+    fe.display_level = level
+    fe.log_level = level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
+
 
 def is_flashEvent(flash_event):
     if isinstance(flash_event, FlashEvent):
@@ -168,32 +239,39 @@ def is_flashEvent(flash_event):
         return flash_event.flash_event
     return False
 
+
 def is_msg(flash_event):
     return is_flashEvent(flash_event)
+
 
 def is_good(flash_event, noneOkay=False):
     if is_flashEvent(flash_event):
         if flash_event.event_type == DANGER:
             return False
-        if flash_event.level in [ERROR, SECURITY]:
+        if flash_event.display_level in [DISP_REVIEW, DISP_SECURITY_ALERT]:
             return False
         return True
     if (flash_event is None) and not noneOkay:
         return False
     return True
 
+
 def is_bad(flash_event, noneOkay=False):
-    return not is_good(flash_event, noneOkay = noneOkay)
+    return not is_good(flash_event, noneOkay=noneOkay)
+
 
 def flash(msg, t=None):
+    ''' use 'flash' when you want the msg displayed to user when level is greater than 'DISP_LOG'. '''
     if is_flashEvent(msg):
-        flask.flash(msg.message, MSG_FLASK_CAT[msg.event_type])
+        if flask.display_level != DISP_LOG:
+            flask.flash(msg.message, MSG_FLASK_CAT[msg.event_type])
     else:
         event_type = "message"
         if t in FLASK_CAT_LIST:
             event_type = t
-        flask.flash(str(msg), "message")
+        flask.flash(str(msg), event_type)
     return
+
 
 COUNTRIES = sorted([(code, code+" - "+babelfish.COUNTRIES[code]) for code in babelfish.COUNTRIES])
 COUNTRIES.insert(0, ("US", "US - UNITED STATES"))

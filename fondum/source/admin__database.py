@@ -341,4 +341,17 @@ def readlist_product(categories=None):
                     break
     return final
 
+
+############################################
+#
+#   LOGS
+#
+############################################
+
+def create_log_viaLogger(record, msg):
+    log = models.Logs()
+    log.pull_from_logger(record, msg)
+    log.save()
+    return
+
 # eof

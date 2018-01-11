@@ -1,5 +1,6 @@
 {
     "site_title": "{{DOMAIN}} Web Site",
+    "domain": "{{DOMAIN}}",
     "copyright": "&copy; X.",
     "rights": "Undefined License.",
     "index_def": "page_main_about",
