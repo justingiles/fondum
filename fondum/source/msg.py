@@ -53,6 +53,7 @@ class FlashEvent(object):
         self.level = DISPLAY
         self.return_def = None
         self.return_def_parms = {}
+        self.I_AM_A_FLASH_EVENT = True
 
     def __repr__(self):
         return "<FlashEvent type={} level={}>".format(
@@ -160,13 +161,18 @@ def security(msg, level=SECURITY, return_def=None, **kwargs):
     fe.return_def_parms = kwargs
     return fe
 
-def is_msg(flash_event):
+def is_flashEvent(flash_event):
     if isinstance(flash_event, FlashEvent):
         return True
+    if hasattr(flash_event, "I_AM_A_FLASH_EVENT"):
+        return flash_event.I_AM_A_FLASH_EVENT
     return False
 
+def is_msg(flash_event):
+    return is_flashEvent(flash_event)
+
 def is_good(flash_event, noneOkay=False):
-    if isinstance(flash_event, FlashEvent):
+    if is_flashEvent(flash_event):
         if flash_event.event_type == DANGER:
             return False
         if flash_event.level in [ERROR, SECURITY]:
@@ -180,7 +186,7 @@ def is_bad(flash_event, noneOkay=False):
     return not is_good(flash_event, noneOkay = noneOkay)
 
 def flash(msg, t=None):
-    if isinstance(msg, FlashEvent):
+    if is_flashEvent(msg):
         flask.flash(msg.message, MSG_FLASK_CAT[msg.event_type])
     else:
         event_type = "message"
