@@ -52,8 +52,8 @@
                 },
                 {
                     "type": "link",
-                    "title": "Example Bypass Form",
-                    "url": "/main/bypass-form/"
+                    "title": "Example Bypass Page",
+                    "url": "/main/special/"
                 },
                 {
                     "type": "link",
@@ -71,19 +71,25 @@
                     "type": "link",
                     "title": "Create New {{DOMAIN}} Account",
                     "url": "/account/new/",
-                    "logged_in": false
+                    "login_required": false
                 },
                 {
                     "type": "link",
                     "title": "Login to {{DOMAIN}}",
                     "url": "/account/login/",
-                    "logged_in": false
+                    "login_required": false
                 },
                 {
                     "type": "link",
                     "title": "Logout",
                     "url": "/logout/",
-                    "logged_in": true
+                    "login_required": true
+                },
+                {
+                    "type": "link",
+                    "title": "ADMIN",
+                    "url": "/admin/main/",
+                    "admin_required": true
                 }
             ]
         }

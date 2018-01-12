@@ -98,10 +98,18 @@ def jinja2_USD(value, fmt=None, prec=2, dollar_sign=True):
     return fmt.format(value)
 
 def jinja2_authtest(item):
-    li = item.get("logged_in", None)
-    if li is None:
+    # check admin_required first
+    ar = item.get("admin_required", False)
+    if ar:
+        if g.user.is_authenticated:
+            if g.user.admin_flag:
+                return True
+        return False
+    # else check login_requireed
+    lr = item.get("login_required", None)
+    if lr is None:
         return True
-    elif li==True:
+    elif lr==True:
         if g.user.is_authenticated:
             return True
     else:
