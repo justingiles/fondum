@@ -1,6 +1,6 @@
 import admin__models as models
 import mongoengine as db
-from app import bcrypt
+from app import bcrypt, logger
 from decimal import Decimal
 
 from PLOD import PLOD
@@ -348,10 +348,19 @@ def readlist_product(categories=None):
 #
 ############################################
 
-def create_log_viaLogger(record, msg):
+def create_log_viaLoggingRecord(record):
     log = models.Logs()
-    log.pull_from_logger(record, msg)
+    log.pull_from_logger(record)
     log.save()
     return
+
+def create_log_viaFlashEvent(fe):
+    if fe.logger_level() < logger.level:
+        return
+    log = models.Logs()
+    log.pull_from_FlashEvent(fe)
+    log.save()
+    return
+
 
 # eof

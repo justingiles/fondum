@@ -15,6 +15,7 @@ import sys
 import babel
 
 import flask_settings
+import msg
 
 CLAIM_COST = 10
 DAILY_ALLOWANCE = 20
@@ -152,6 +153,12 @@ google = oauth.remote_app(
 )
 oauth.init_app(app)
 
+logger = logging.getLogger(app.config.get("domain", "fondum"))
+logger.setLevel(app.config.get("LOGGING_LEVEL",logging.WARNING))
+handler = msg.MongoHandler()
+formatter = logging.Formatter(app.config["LOGGING_FORMAT"])
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 with open("static/img/nav-icon.svg") as nav_icon_file:
     nav_icon = nav_icon_file.read()
@@ -160,9 +167,6 @@ from login_handler import *
 from views import *
 
 if __name__ == '__main__':
-    logger = logging.getLogger(app.config.get("domain", "fondum"))
-    logger.setLevel(app.config.get("LOGGING_LEVEL",logging.WARNING))
-    # logger.addHandler(msg.MongoHandler)
     app.debug = app.config['DEBUG']
     app.run(host=app.config['HOST'], port=app.config['PORT'])
 

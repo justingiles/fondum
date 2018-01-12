@@ -1,9 +1,10 @@
-from app import app
+from app import app, logger
 from flask import Flask, request, g, redirect, url_for, \
     render_template, send_file, send_from_directory, abort
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
 import os
 from werkzeug.wrappers import Response
+import logging
 
 import msg
 import admin__database as database
@@ -36,12 +37,14 @@ def document_page(group_name, page_name):
     key = database.build_key(group_name, page_name)
     article = database.read_article_byKey(key)
     if article is None:
+        logger.warning("Did not find document_page /{}/{}/".format(group_name, page_name))
         return render_template(
             'reference-not-found.html',
             group_name=group_name,
             page_name=page_name
         )
     html = parsing.generate_html(article)
+    logger.debug("Served document_page /{}/{}/".format(group_name, page_name))
     return render_template(
         'document.html',
         article=article,
@@ -53,13 +56,13 @@ def page_handler(page, source_def, key, **kwargs):
     if msg.is_bad(page.status):
         msg.flash(page.status)
         return redirect(url_for('index'))
-    if page.login_required:
-        if not current_user.is_authenticated:
-            msg.flash('You must be logged in.', t="warning")
-            return redirect(url_for('index'))
     if page.admin_required:
         if not g.admin_flag:
-            msg.flash('You must be an administrator.', t="warning")
+            msg.flash('You must be an administrator.', t="warning", loglevel=logging.WARNING)
+            return redirect(url_for('index'))
+    if page.login_required:
+        if not current_user.is_authenticated:
+            msg.flash('You must be logged in.', t="warning", loglevel=logging.INFO)
             return redirect(url_for('index'))
     #
     # handle purposeful bypass
@@ -99,6 +102,7 @@ def page_handler(page, source_def, key, **kwargs):
     html = parsing.generate_html(article, page)
     #
     #
+    logger.debug("Served Page /{}/".format(key))
     return render_template(
         'page.html',
         page=page,

@@ -25,6 +25,13 @@ MSG_FLASK_CAT = {
     WARNING: "warning",
     DANGER: "danger"
 }
+MSG_CAT_MAP = {
+    "message": DEFAULT,
+    "success": SUCCESS,
+    "info": INFO,
+    "warning": WARNING,
+    "danger": DANGER,
+}
 FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
 
 MSG_BACKGROUND = {
@@ -64,17 +71,18 @@ LOG_DESCRIPTION = {
 #
 # PRESENTATION
 #
+
 DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
-DISP_SHOW = 1             # show to end-user; this is the default level
-DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive
-DISP_REVIEW = 3           # this is an error that should be shown to user and fixed and/or reviewed by programmer
+DISP_SHOW = 1             # show to end-user; this is the default level; progress continues
+DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive; but progress still continues
+DISP_ERROR = 3            # this is an error that should be shown to user; a problem needs to be fixed
 DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
 
 DISP_DESCRIPTION = {
     DISP_LOG: "LOG",
     DISP_SHOW: "SHOW",
     DISP_WARNING: "WARNING",
-    DISP_REVIEW: "REVIEW",
+    DISP_ERROR: "ERROR",
     DISP_SECURITY_ALERT: "SECURITY_ALERT",
 }
 
@@ -88,9 +96,9 @@ DISP_DESCRIPTION = {
 class MongoHandler(logging.Handler):
 
     def emit(self, record):
-        import admin_database
-        msg = self.format(record)
-        admin_database.create_log(record, msg)
+        import admin__database
+        record.formatted_message = self.format(record)
+        admin__database.create_log_viaLoggingRecord(record)
         return True
 
 
@@ -113,6 +121,19 @@ class FlashEvent(object):
 
     def logger_level(self):
         return LOG_LEVEL_MAP[self.log_level]
+
+    def import_logger_level(self, python_logger_level):
+        level = 0
+        for n in range(5):
+            if python_logger_level >= LOG_LEVEL_MAP[n]:
+                level = n
+        self.log_level = level
+        return
+
+    def log(self):
+        import admin__database
+        admin__database.create_log_viaFlashEvent(self)
+        return True
 
     def __repr__(self):
         return "<FlashEvent type={} level={}>".format(
@@ -203,7 +224,7 @@ def error(*args, **kwargs):
 
 #
 # used to return events that shouldn't ever really happen. i.e. a software bug
-def bug(msg, level=DISP_REVIEW, return_def=None, **kwargs):
+def bug(msg, level=DISP_ERROR, return_def=None, **kwargs):
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
@@ -248,7 +269,7 @@ def is_good(flash_event, noneOkay=False):
     if is_flashEvent(flash_event):
         if flash_event.event_type == DANGER:
             return False
-        if flash_event.display_level in [DISP_REVIEW, DISP_SECURITY_ALERT]:
+        if flash_event.display_level in [DISP_ERROR, DISP_SECURITY_ALERT]:
             return False
         return True
     if (flash_event is None) and not noneOkay:
@@ -260,16 +281,17 @@ def is_bad(flash_event, noneOkay=False):
     return not is_good(flash_event, noneOkay=noneOkay)
 
 
-def flash(msg, t=None):
+def flash(message, t=None, loglevel=None):
     ''' use 'flash' when you want the msg displayed to user when level is greater than 'DISP_LOG'. '''
-    if is_flashEvent(msg):
-        if flask.display_level != DISP_LOG:
-            flask.flash(msg.message, MSG_FLASK_CAT[msg.event_type])
-    else:
-        event_type = "message"
-        if t in FLASK_CAT_LIST:
-            event_type = t
-        flask.flash(str(msg), event_type)
+    if not is_flashEvent(message):
+        message = msg(message)
+        if t in MSG_CAT_MAP:
+            message.event_type = MSG_CAT_MAP[t]
+        if loglevel:
+            message.import_logger_level(loglevel)
+    if message.display_level != DISP_LOG:
+        flask.flash(message.message, MSG_FLASK_CAT[message.event_type])
+    message.log()
     return
 
 

@@ -152,22 +152,24 @@ LOG_DESCRIPTION = {
 }
 
 DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
-DISP_SHOW = 1             # show to end-user; this is the default level
-DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive
-DISP_REVIEW = 3           # this is an error that should be shown to user and fixed and/or reviewed by programmer
+DISP_SHOW = 1             # show to end-user; this is the default level; progress continues
+DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive; but progress still continues
+DISP_ERROR = 3            # this is an error that should be shown to user; a problem needs to be fixed
 DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
 
 DISP_DESCRIPTION = {
     DISP_LOG: "LOG",
     DISP_SHOW: "SHOW",
     DISP_WARNING: "WARNING",
-    DISP_REVIEW: "REVIEW",
+    DISP_ERROR: "ERROR",
     DISP_SECURITY_ALERT: "SECURITY_ALERT",
 }
 
 class Logs(db.Document):
     dt_created = db.DateTimeField(required=True, default=datetime.datetime.now)
     s_domain = db.StringField()
+    s_instance = db.StringField(default="default")
+    s_message = db.StringField()
     s_src = db.StringField()
     s_event_type = db.StringField()
     n_display_level = db.IntField()
@@ -178,8 +180,23 @@ class Logs(db.Document):
     s_return_def_parms = db.StringField()
     s_logger_string = db.StringField()
  
+    def interpret_pythonLoggingLevel(self, logging_level):
+        level = 0
+        category = "info"
+        for n in range(5):
+            if logging_level>=LOG_LEVEL_MAP[n]:
+                level = n
+        if level in [LOG_DEBUG, LOG_INFO]:
+            category = "info"
+        elif level in [LOG_WARNING]:
+            category = "warning"
+        elif level in [LOG_ERROR, LOG_CRITICAL]:
+            category = "danger"
+        return (level, category)
+
     def pull_from_FlashEvent(self, fe):
         self.s_domain = flask.current_app.config.get("domain", "fondum")
+        self.s_message = fe.message
         self.s_event_type = FLASK_CAT_LIST[fe.event_type]
         self.n_display_level = fe.display_level
         self.s_display_level = DISP_DESCRIPTION[fe.display_level]
@@ -189,9 +206,15 @@ class Logs(db.Document):
         self.s_return_def_parms = str(fe.return_def_parms)
         self.s_src = "flash"
 
-    def pull_from_logger(self, record, msg):
+    def pull_from_logger(self, record):
         self.s_domain = flask.current_app.config.get("domain", "fondum")
-        self.s_logger_string = msg
+        self.s_message = record.message
+        self.s_logger_string = record.formatted_message
+        (self.n_log_level, self.n_event_type) = self.interpret_pythonLoggingLevel(record.levelno)
+        self.s_log_level = LOG_DESCRIPTION[self.n_log_level]
+        self.n_display_level = DISP_LOG   # records pulled from logger are never shown to user
+        self.s_display_level = DISP_DESCRIPTION[DISP_LOG]
+        self.s_return_def_parms = "{}"
         self.s_src = "logger"
 
 
