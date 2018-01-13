@@ -34,21 +34,21 @@ MSG_CAT_MAP = {
 }
 FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
 
-MSG_BACKGROUND = {
-    DEFAULT: "DarkBlue",
-    SUCCESS: "Green",
-    INFO: "Aqua",
-    WARNING: "Yellow",
-    DANGER: "DarkRed"
-}
 
-MSG_FOREGROUND = {
-    DEFAULT: "White",
-    SUCCESS: "White",
-    INFO: "White",
-    WARNING: "Black",
-    DANGER: "White"
-}
+# MSG_FOREGROUND = {
+#     DEFAULT: "White",
+#     SUCCESS: "White",
+#     INFO: "White",
+#     WARNING: "White",
+#     DANGER: "White"
+# }
+# MSG_BACKGROUND = {
+#     DEFAULT: "#337ab7",    
+#     SUCCESS: "#5cb85c",
+#     INFO: "#5bc0de",
+#     WARNING: "#f0ad4e",
+#     DANGER: "#d9534f"
+# }
 
 #
 # LOGGING LEVELS
@@ -130,6 +130,10 @@ class FlashEvent(object):
         self.log_level = level
         return
 
+    def set_category(self, category):
+        if category in MSG_CAT_MAP:
+            self.event_type = MSG_CAT_MAP[category]
+
     def log(self):
         import admin__database
         admin__database.create_log_viaFlashEvent(self)
@@ -157,6 +161,10 @@ def msg(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
+
+
+def message(*args, **kwargs):
+    return msg(*args, **kwargs)
 
 
 def note(msg, level=DISP_LOG, return_def=None, **kwargs):

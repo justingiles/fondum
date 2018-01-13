@@ -6,8 +6,8 @@
     "index_def": "page_main_about",
     "font": {
         "external": null,
-        "menu-text": "Helvitica, Arial, sans-serif;",
-        "body-text": "Helvitica, Arial, sans-serif;"
+        "menu-text": "Verdana, Arial, Helvetica, sans-serif;",
+        "body-text": "Verdana, Arial, Helvetica, sans-serif;"
     },
     "color": {
         "menu-text": "black",
@@ -59,6 +59,11 @@
                     "type": "link",
                     "title": "Example Of The Sendmail Feature",
                     "url": "/main/example-sendmail/"
+                },
+                {
+                    "type": "link",
+                    "title": "Example Of Flash System",
+                    "url": "/main/flash/"
                 }
             ]
         }

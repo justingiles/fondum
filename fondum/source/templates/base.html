@@ -14,13 +14,11 @@
   margin-right: 16px;
   float: left;
   position: relative;
-  display: inline-block;
 }
 .header-right {
   margin-left: 16px;
   float: right;
   position: relative;
-  display: inline-block;
 }
 .header-center {
   margin: 0 auto;
@@ -52,7 +50,7 @@ a.navsub:active {
   position: absolute;
   background-color: {{g.s["color"]["menu-background"]}};
   min-width: 280px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
   z-index: 1;
 }
 .dropdown-content a {
@@ -264,26 +262,30 @@ a:active {
 }
 .message {
   color: white;
-  background-color: darkblue;
+  background-color: #337ab7;
 }
 .success {
   color: white;
-  background-color: green;
+  background-color: #5cb85c;
 }
 .info {
   color: white;
-  background-color: aqua;
+  background-color: #5bc0de;
 }
 .warning {
   color: white;
-  background-color: yellow;
+  background-color: #f0ad4e;
 }
 .danger {
   color: white;
-  background-color: darkred;
+  background-color: #d9534f;
 }
-
-
+.msgbox_icon {
+  font-size: 4em;
+}
+.msgbox_text {
+  font-size: 2em;
+}
 li {
   padding-left:5px;
 }
@@ -293,7 +295,7 @@ dt:after {
 }
 
 dl  {
-    margin: 0px;
+    margin: 0;
     padding: 10px;
     overflow: auto;
 }
@@ -308,7 +310,7 @@ dt  {
 dd {
    width: 56%;
    display: inline-block;
-   padding: 10px 0px 10px 0px;
+   padding: 10px 0 10px 0;
 }
 
 span.btn {
@@ -317,50 +319,73 @@ span.btn {
   appearance: button;
 
   text-decoration: none;
-  color: initial;
   padding: 6px 12px;
   border: 1px solid;
   border-radius: 4px;
 }
 
-   @media (min-width: 1200px) { 
-    .page-size {
-      max-width: 1012px;
-    }
-    .content-size {
-      max-width: 972;
-    }
-    .msgbox {
-     overflow: hidden;
-     transition: 1.8s;
-     border: 1px solid;
-     height: 50px;
-     display: inline-block;
-     margin: 0px 20px 10px 20px;
-     padding: 10px;
-    }
-   }
-   @media (max-width: 1199px) { 
-    .page-size {
-      min-width: 320px;
-    }
-    .content-size {
-      min-width: 318px;
-    }
-    .msgbox {
-     overflow: hidden;
-     transition: 1.8s;
-     border: 1px solid;
-     height: 50px;
-     display: inline-block;
-     margin: 0px 20px 10px 20px;
-     padding: 10px;
-    }
-   }
+.msgbox-start {
+    position:fixed; 
+    top: 0px; 
+    left: 0px; 
+    width: 100%;
+    z-index:9999; 
+    border-radius:0px
+}
+.msgbox-original {
+   overflow: hidden;
+   transition: 1.8s;
+   border: 1px solid;
+   height: 50px;
+   display: inline-block;
+   margin: 0 20px 10px 20px;
+   padding: 10px;  
+}
+
+@media (min-width: 1200px) { 
+  .page-size {
+    max-width: 1012px;
+  }
+  .content-size {
+    max-width: 972;
+  }
+  .msgbox {
+    position: fixed;
+    top: 40px;
+    right: 0px;
+    overflow: hidden;
+    transition: 1.8s;
+    border: 1px solid;
+    min-height: 50px;
+    min-width: 320px;
+    display: inline-block;
+    margin: 0 20px 10px 20px;
+    padding: 10px;
+    z-index: 9999;
+    border-radius: 10px;
+  }
+}
+@media (max-width: 1199px) { 
+  .page-size {
+    min-width: 320px;
+  }
+  .content-size {
+    min-width: 318px;
+  }
+  .msgbox {
+    overflow: hidden;
+    transition: 1.8s;
+    border: 1px solid;
+    height: 50px;
+    display: inline-block;
+    margin: 0 20px 10px 20px;
+    padding: 10px;
+  }
+}
   </style>
   {% block header %}{% endblock %}
  </head>
- <body style="font-family: {{g.s['font']['body-text']}}; margin: 0; box-sizing: border-box; background-color: {{g.s['color']['body-background']}}; color: {{g.s['color']['body-text']}};" onload="setTimeout(hide_flash_boxes, 5000)">
+ <body style="font-family: {{g.s['font']['body-text']}}; margin: 0; box-sizing: border-box; background-color: {{g.s['color']['body-background']}}; color: {{g.s['color']['body-text']}};">
   <!-- what follows is the header format -->
   <div style="display: block; position: relative; font-size: {{g.s['size']['menu-text']}}; font-weight: 600; font-family: {{g.s['font']['menu-text']}}">
    <div style="z-index: 1; padding-top: 12px; padding-bottom: 12px; color: rgba(255,255,255,0.75); background-color: {{g.s["color"]["menu-background"]}};">
@@ -388,8 +413,8 @@ span.btn {
    {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}
     <div class="msgbox {{category}}">
-    {{category|category_icon|safe}}<br />
-    {{message|safe}}
+      <span class="msgbox_icon">{{category|category_icon|safe}}</span>
+      <span class="msgbox_text">{{message|safe}}</span>
     </div>
     {% endfor %}
    {% endwith %}
@@ -437,79 +462,84 @@ span.btn {
 
   <script>
 
+function startup() {
 
-    {% if page and page.has_form %}
-    window.onload = function () {
-      var supported = {date: false, number: false, time: false, month: false, week: false},
-          tester = document.createElement('input');
-      for(var i in supported){
-          tester.type = i;
-          tester.value = 'bad';
-          if(tester.type === i && tester.value === ''){
-              supported[i] = true;
-          }
-      }
+  setTimeout(hide_flash_boxes, 5000);
 
-      // handle date fields if a form is on-screen
-      if (supported["date"]==true) {
-        elements = document.getElementsByClassName("datefield");
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].type = 'date';
-        }
-        elements = document.getElementsByClassName("datetimefield");
-        for (var i = 0; i < elements.length; i++) {
-            t = elements[i].value.replace(' ', 'T');
-            if (t[16]==":") {
-              t = t.substring(0, 16);
-            }
-            elements[i].value = t;
-            elements[i].type = 'datetime-local';
-            console.log(t);
-        }
+  {% if page and page.has_form %}
+  var supported = {date: false, number: false, time: false, month: false, week: false};
+  tester = document.createElement('input');
+  for(var i in supported){
+      tester.type = i;
+      tester.value = 'bad';
+      if(tester.type === i && tester.value === ''){
+          supported[i] = true;
       }
+  };
+
+  // handle date fields if a form is on-screen
+  if (supported["date"]==true) {
+    elements = document.getElementsByClassName("datefield");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].type = 'date';
+    };
+    elements = document.getElementsByClassName("datetimefield");
+    for (var i = 0; i < elements.length; i++) {
+        t = elements[i].value.replace(' ', 'T');
+        if (t[16]==":") {
+          t = t.substring(0, 16);
+        }
+        elements[i].value = t;
+        elements[i].type = 'datetime-local';
+        console.log(t);
     }
-    {% endif %}
+  };
+  {% endif %}
+}
 
-    /* When the user clicks on the button, 
-    toggle between hiding and showing the dropdown content */
-    function drophandler(target) {
-        e = document.getElementById(target)
-        if (e.style.display=='block') {
-          e.style.display = 'none'
-        } else {
-          hide_all_nav_menus();
-          e.style.display = 'block';
-        };
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function drophandler(target) {
+    e = document.getElementById(target)
+    if (e.style.display=='block') {
+      e.style.display = 'none'
+    } else {
+      hide_all_nav_menus();
+      e.style.display = 'block';
     };
+};
 
-    // Close the dropdown menu if the user clicks outside of it
-    window.onclick = function(event) {
-      if (!event.target.matches('.navbtn')) {
-        hide_all_nav_menus();
-      }
-    };
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.navbtn')) {
+    hide_all_nav_menus();
+  }
+};
 
-    function hide_all_nav_menus() {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.style.display=='block') {
-          openDropdown.style.display = 'none';
-        }
-      }
-    };
+function hide_all_nav_menus() {
+  var dropdowns = document.getElementsByClassName("dropdown-content");
+  var i;
+  for (i = 0; i < dropdowns.length; i++) {
+    var openDropdown = dropdowns[i];
+    if (openDropdown.style.display=='block') {
+      openDropdown.style.display = 'none';
+    }
+  }
+};
 
-    function hide_flash_boxes() {
-      var boxes = document.getElementsByClassName('msgbox');
-      var i;
-      for (i = 0; i < boxes.length; i++) {
-        var box = boxes[i];
-        box.style.height = 0;
-        box.style.padding = 0;
-        box.style.border = "none";
-      };
-    };
+function hide_flash_boxes() {
+  var boxes = document.getElementsByClassName('msgbox');
+  var i;
+  for (i = 0; i < boxes.length; i++) {
+    var box = boxes[i];
+    box.style["min-height"] = 0;
+    box.style.height = 0;
+    box.style.padding = 0;
+    box.style.border = "none";
+  };
+};
+
+window.onload=startup;
 
   </script>
  </body>

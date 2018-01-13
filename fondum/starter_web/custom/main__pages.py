@@ -249,4 +249,37 @@ more subtley and with greater restrictions.
             return result_msg
 
 
+# /main/flash
+class Flash(Page):
+
+    default_text = """
+== Example of Flash Messaging
+
+Using the form below, enter a message and category of message and press Submit.
+A copy of that message will then flash on the page after submission.
+"""
+
+
+    class MainForm(PageForm):
+
+        message = StringField("Message content")
+        category = SelectField("Category", choices=[
+            ("message", "Default/Generic [message]"),
+            ("success", "Success [success]"),
+            ("info", "Informational [info]"),
+            ("warning", "Warning/Caution [warning]"),
+            ("danger", "Danger/Error/Failure [danger]"),
+        ])
+        submit = SubmitField("Submit")
+
+        def process_form(self, wtf, **kwargs):
+            #
+            # this is where any database processing would happen
+            #
+
+            m = msg.message(self.message.data)
+            m.set_category(self.category.data)
+            return m
+
+
 # eof
