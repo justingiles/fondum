@@ -163,33 +163,40 @@ You are now ready to start a Fondum project.
 
 ## List of Functions Beyond Flask
 
-* Docker: a service that efficiently stores the project in "virtual machines". Used for both testing and deployment.
-* MongoDB: a NoSQL database. Accessed via the MongoEngine library.
-* Google OAuth2: an open authentication method. Allows users to login and create account with their Google accounts.
-* Amazon S3: an object (file) storage service. It is where we keep most of the images.
-* NGINX: the web server that serves the web pages to the public.
-* Unicorn: a wrapper for flask used by NGINX in production environments.
-* Creole: the `python-creole` library interprets the [creole](http://www.wikicreole.org/) text format. Used for safely formatting the live web content.
-* Stripe: Electronic payment processor.
-* FLATTR: Online patronage tips for web pages and other content.
-* localtest.me: support for wildcard localhost domains for development testing.
+* **Docker**: a service that efficiently stores the project in "virtual machines". Used for both testing and deployment.
+* **MongoDB**: a NoSQL database. Accessed via the MongoEngine library.
+* **Google OAuth2**: an open authentication method. Allows users to login and create account with their Google accounts.
+* **Amazon S3**: an object (file) storage service. It is where we keep most of the images.
+* **NGINX**: the web server that serves the web pages to the public.
+* **Unicorn**: a wrapper for flask used by NGINX in production environments.
+* **Creole**: the `python-creole` library interprets the [creole](http://www.wikicreole.org/) text format. Used for safely formatting the live web content.
+* **Stripe**: Electronic payment processor.
+* **FLATTR**: Online patronage tips for web pages and other content.
+* **localtest.me**: support for wildcard localhost domains for development testing.
+* **SendGrid**: an outbound SMTP Email service.
 
 ## Documenation Support Assumptions
 
 The following is a list of artibrary assumptions about the context fondum will be used in. They are not part of the framework itself, but all testing is done against these assumptions. And, documentation is filmed/written with the assumptions.
 
-* Digital Ocean: the docker will be hosted using Digital Ocean's cloud service.
-* NameCheap.com: DNS purchase and management.
+* **Digital Ocean**: the hosting service for hosting the web and mongodb service.
+* **NameCheap.com**: Domain name purchase and management.
 
 TBD:
 
 * Babel/BabelFish: a library that handles multi-lingual internationalization. Creates and uses PO/POT translation files.
-* SendGrid: a outbound SMTP messages service. Integrated with Msg (see below)
 * some kind of traffic tracking
 * compile-time compression of HTML5/CSS.
 
+## Built-In Libraries
 
-IN-BUILT (later to be made into standalone libraries):
-
-* Msg: a service that generically returns "responses". Used in multiple ways: generates logs, web flash messages, and python function responses.
-* Page: a page description class that goes WAY beyond what Flask-WTF does. Generates forms, tables, and almost all page content.
+* Msg: a service that generically returns "responses". Used specifically for: 
+    * generates logs (handler sends them to MongoDB collection)
+    * web flash messages
+    * python function responses
+* Page: a page description class that goes WAY beyond what Flask-WTF does. Generates:
+    * forms
+    * tables, including tabbed tables
+    * catalogs
+    * blogs
+    * ... and almost all other page content.
