@@ -22,9 +22,13 @@ class Config(BaseConfig):
     #
     # Google OAuth2 details
     #
-    # return urls:
-    #   http://{{DOMAIN}}/account/google-oauth2-callback
-    #   http://127.0.0.1/player/google-oauth2-callback
+    # return urls to authorize in the Google Developer Console:
+    #
+    #   http://{{DOMAIN}}.localtest.me/account/google-oauth2-callback/new
+    #   http://{{DOMAIN}}/account/google-oauth2-callback/new
+    #   http://{{DOMAIN}}.localtest.me/account/google-oauth2-callback/current
+    #   http://{{DOMAIN}}/account/google-oauth2-callback/current
+    #
     GOOGLE_OAUTH = {
         'consumer_key': "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com",
         'consumer_secret': "xxxxxxxxxxxxxxxxxxxxxxxx",
