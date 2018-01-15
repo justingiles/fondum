@@ -56,9 +56,9 @@ def jinja2_escapejs_filter(value):
 
 def jinja2_datetime(date, fmt='%Y-%m-%d', locale="en"):
     if hasattr(date, "strftime"):
-        if fmt=="%Y-%m-%d":
+        if fmt == "%Y-%m-%d":
             return babel.dates.format_date(date, format="medium", locale=locale)
-        elif fmt=="%Y-%m-%d %H:%M:%S":
+        elif fmt == "%Y-%m-%d %H:%M:%S":
             return babel.dates.format_datetime(date, format="medium", locale=locale)
         else:
             return babel.dates.format_datetime(date, format=fmt, locale=locale)
@@ -66,7 +66,6 @@ def jinja2_datetime(date, fmt='%Y-%m-%d', locale="en"):
         return str(date)
     else:
         return ""
-
 
 
 CATEGORY_HTML = {
@@ -97,19 +96,20 @@ def jinja2_USD(value, fmt=None, prec=2, dollar_sign=True):
         fmt.replace("$", "", 1)
     return fmt.format(value)
 
+
 def jinja2_authtest(item):
     # check admin_required first
     ar = item.get("admin_required", False)
     if ar:
         if g.user.is_authenticated:
-            if g.user.admin_flag:
+            if g.admin_flag:
                 return True
         return False
     # else check login_requireed
     lr = item.get("login_required", None)
     if lr is None:
         return True
-    elif lr==True:
+    elif lr is True:
         if g.user.is_authenticated:
             return True
     else:
