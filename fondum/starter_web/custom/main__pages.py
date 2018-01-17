@@ -12,6 +12,7 @@ import datetime
 import random
 from sendmail import sendmail
 
+
 # /main/about/
 class About(Page):
 
@@ -259,7 +260,6 @@ Using the form below, enter a message and category of message and press Submit.
 A copy of that message will then flash on the page after submission.
 """
 
-
     class MainForm(PageForm):
 
         message = StringField("Message content")
@@ -280,6 +280,61 @@ A copy of that message will then flash on the page after submission.
             m = msg.message(self.message.data)
             m.set_category(self.category.data)
             return m
+# NOTE: Normally the following would be stored in the corresponding
+# 'x__models.py' file. So, in this case, it would be stored in
+# 'examples__models.py'. But I break the normal rule here to help with
+# documentation of this CopyFields example.
+#
+
+import mongoengine as db
+
+
+class TestDocument(db.Document):
+    name = db.StringField()
+    height = db.IntField()
+    age = db.IntField()
+
+
+# NOTE: Normally the following would be stored in the corresponding
+# 'x__database.py' file. So, in this case, it would be stored in
+# 'examples__database.py'. But I break the normal rule here to help with
+# documentation of this CopyFields example.
+#
+
+from fondum_utility import copy_fields
+
+
+def create_testDocument(wtf):
+    td = TestDocument()
+    copy_fields(src=wtf, dest=td)
+    td.save()
+    return msg.success('TestDocument "{}"'.format(td.name))
+
+
+# /main/flash
+class CopyFields(Page):
+
+    default_text = """
+== Example of the Copy Fields Function
+
+"Fields" are importable in both directions.
+* One can import the fields of a MongoEngine Document into a PageForm (child of WTForms) with the '__import_fields=obj' class variable.
+* One can export the fields of PageForms into a MongoEngine Document with the 'fondum_utility.copy_fields(...)' function.
+
+See the corresponding source code for this page for the example of use.
+
+NOTE: By definition, '__import_fields' skips the 'id' fields or any field starting with an underscore.
+"""
+
+    class MainForm(PageForm):
+
+        # _import_fields = models.TestDocument
+        _import_fields = TestDocument
+        submit = SubmitField("Submit")
+
+        def process_form(self, wtf, **kwargs):
+            # return database.create_testDocument()
+            return create_testDocument()
 
 
 # eof

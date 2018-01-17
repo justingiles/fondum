@@ -6,6 +6,7 @@ from app import g
 import copy
 import msg
 import stripe
+import fondum_utility
 
 import admin__database
 
@@ -59,7 +60,6 @@ class Page(object):
         else:
             self.has_catalog = False
 
-
     def process(self, TABLE_NAME=None, **kwargs):
         self.url_params = kwargs
         #
@@ -92,6 +92,8 @@ class Page(object):
         # PROCESS MAIN FORM
         #
         if self.has_form:
+            if hasattr(self.MainForm, '_import_fields'):
+                fondum_utility.convert_MongoEngineDoc_to_PageForm(self.MainForm._import_fields, self.MainForm)
             self.wtf = self.MainForm(outer_page_instance=self, style=self.form_style)
         #
         self.status = msg.success("page processed")
