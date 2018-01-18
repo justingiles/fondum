@@ -280,6 +280,8 @@ A copy of that message will then flash on the page after submission.
             m = msg.message(self.message.data)
             m.set_category(self.category.data)
             return m
+
+
 # NOTE: Normally the following would be stored in the corresponding
 # 'x__models.py' file. So, in this case, it would be stored in
 # 'examples__models.py'. But I break the normal rule here to help with
@@ -290,10 +292,17 @@ import mongoengine as db
 
 
 class TestDocument(db.Document):
-    name = db.StringField()
+    name = db.StringField(label="Full Name")
     height = db.IntField()
     age = db.IntField()
+    hair_color = db.StringField(
+        choices=('black', 'brown', 'blond', 'red', 'grey'),
+        radio=True
+    )
 
+#
+# "extra" labels supported:
+#    label = Field Label
 
 # NOTE: Normally the following would be stored in the corresponding
 # 'x__database.py' file. So, in this case, it would be stored in
@@ -305,10 +314,10 @@ from fondum_utility import copy_fields
 
 
 def create_testDocument(wtf):
-    td = TestDocument()
-    copy_fields(src=wtf, dest=td)
-    td.save()
-    return msg.success('TestDocument "{}"'.format(td.name))
+    doc = TestDocument()
+    copy_fields(src=wtf, dest=doc)
+    doc.save()
+    return msg.success('Created TestDocument "{}"'.format(doc.name))
 
 
 # /main/flash
@@ -318,19 +327,24 @@ class CopyFields(Page):
 == Example of the Copy Fields Function
 
 "Fields" are importable in both directions.
-* One can import the fields of a MongoEngine Document into a PageForm (child of WTForms) with the '__import_fields=obj' class variable.
+* One can import the fields of a MongoEngine Document into a PageForm (child of WTForms) with the '_import_fields=obj' class variable.
 * One can export the fields of PageForms into a MongoEngine Document with the 'fondum_utility.copy_fields(...)' function.
 
 See the corresponding source code for this page for the example of use.
 
-NOTE: By definition, '__import_fields' skips the 'id' fields or any field starting with an underscore.
+NOTE: By definition, '_import_fields' skips the 'id' fields or any field starting with an underscore.
+
+NOTE: the library 'Flask-MongoEngine' also has a 'model_form' function that has function similar to '_import_fields'.
 """
 
     class MainForm(PageForm):
 
+        submit = SubmitField("Submit")
         # _import_fields = models.TestDocument
         _import_fields = TestDocument
-        submit = SubmitField("Submit")
+
+        # _field_order is strictly optional; without it, the imports are simply appended
+        _field_order = ['name', 'age', 'height', 'hair_color', 'submit']
 
         def process_form(self, wtf, **kwargs):
             # return database.create_testDocument()
