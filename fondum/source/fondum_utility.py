@@ -112,8 +112,6 @@ def parse_fields(src):
 
 
 def convert_MongoEngineDoc_to_PageForm(doc, wtf):
-    import page  # this is done inside the function to prevent a loop
-
     (src_handler, src_fields, alias_field_map) = parse_fields(doc)
     if src_handler == "mongoengine":
         raise(ImportError("Unable to do _import_fields on a mongoengine doc instance."))
@@ -122,9 +120,68 @@ def convert_MongoEngineDoc_to_PageForm(doc, wtf):
     for key in src_fields:
         if not key.startswith("_"):
             if key != "id":
-                setattr(wtf, key, page.StringField(key))
-    zak()  # next: insert ordering
-    # https://stackoverflow.com/questions/5848252/wtforms-form-class-subclassing-and-field-ordering
+                field = mapfield_ME_to_Form(key, doc.__dict__[key])
+                setattr(wtf, key, field)
 
+
+def mapfield_ME_to_Form(key, entry):
+    import page  # this is done inside the function to prevent a loop
+
+    t = str(entry)
+    if hasattr(entry, "label"):
+        label = entry.label
+    else:
+        label = entry.db_field
+    #
+    # id field type
+    #
+    if "BooleanField" in t:
+        r = page.BooleanField(label)
+    elif "DateTimeField" in t:
+        r = page.DateTimeField(label)
+    elif "IntField" in t:
+        r = page.IntegerField(label)
+    else:
+        r = page.StringField(label)
+    #
+    # check for SelectField
+    #
+    if entry.choices:
+        choices = [(key, key) for key in entry.choices]
+        if hasattr(entry, 'radio') and entry.radio==True:
+            r = page.RadioField(label, choices=choices)
+        else:
+            r = page.SelectField(label, choices=choices)
+    return r
+
+    #  NOT YET DONE (defaults to StringField)
+    # if "BinaryField
+    # if "ComplexDateTimeField
+    # if "DecimalField
+    # if "DictField
+    # if "DynamicField
+    # if "EmailField
+    # if "EmbeddedDocumentField
+    # if "EmbeddedDocumentListField
+    # if "FileField
+    # if "FloatField
+    # if "GenericEmbeddedDocumentField
+    # if "GenericReferenceField
+    # if "GeoPointField
+    # if "ImageField
+    # if "ListField
+    # if "MapField
+    # if "ObjectIdField
+    # if "ReferenceField
+    # if "SequenceField
+    # if "SortedListField
+    # if "URLField
+    # if "UUIDField
+    # if "PointField
+    # if "LineStringField
+    # if "PolygonField
+    # if "MultiPointField
+    # if "MultiLineStringField
+    # if "MultiPolygonField
 
 # eof

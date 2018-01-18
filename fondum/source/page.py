@@ -7,6 +7,7 @@ import copy
 import msg
 import stripe
 import fondum_utility
+import collections
 
 import admin__database
 
@@ -108,6 +109,20 @@ class PageForm(FlaskForm):
         FlaskForm.__init__(self, *args, **kwargs)
         self.page = outer_page_instance
         self._form_style = style or FORM_STYLES[0]
+        #
+        # reorder fields
+        #
+        if hasattr(self, "_field_order"):
+            fields = collections.OrderedDict()
+            starting_keys = self._fields.keys()
+            for key in self._field_order:
+                if key not in starting_keys:
+                    raise(KeyError("Cannot find {} (from _field_order) in PageForm fields.".format(key)))
+                fields[key] = self._fields[key]
+            for key in starting_keys:
+                if key not in fields:
+                    fields[key] = self._fields[key]
+            self._fields = fields
 
     def pull_data(self, source):
         own_keys = [k.short_name for k in self]
