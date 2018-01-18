@@ -3,7 +3,7 @@
     "domain": "{{DOMAIN}}",
     "copyright": "&copy; X.",
     "rights": "Undefined License.",
-    "index_def": "page_main_about",
+    "index_def": "page_example_about",
     "font": {
         "external": null,
         "menu-text": "Verdana, Arial, Helvetica, sans-serif;",
@@ -43,27 +43,27 @@
                 {
                     "type": "link",
                     "title": "All About {{DOMAIN}}",
-                    "url": "/main/about/"
+                    "url": "/example/about/"
                 },
                 {
                     "type": "link",
                     "title": "Example of All Page Elements",
-                    "url": "/main/example-of-everything/"
+                    "url": "/example/example-of-everything/"
                 },
                 {
                     "type": "link",
                     "title": "Example Bypass Page",
-                    "url": "/main/special/"
+                    "url": "/example/special/"
                 },
                 {
                     "type": "link",
                     "title": "Example Of The Sendmail Feature",
-                    "url": "/main/example-sendmail/"
+                    "url": "/example/example-sendmail/"
                 },
                 {
                     "type": "link",
                     "title": "Example Of Flash System",
-                    "url": "/main/flash/"
+                    "url": "/example/flash/"
                 }
             ]
         }
@@ -102,13 +102,13 @@
     "footer_links_left": [
         {
             "title": "About Us",
-            "url": "/main/about/"
+            "url": "/example/about/"
         }
     ],
     "footer_links_right": [
         {
             "title": "Special",
-            "url": "/main/special/"
+            "url": "/example/special/"
         }
     ]
 }

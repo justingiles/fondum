@@ -125,6 +125,12 @@
         data-locale="auto"></script>
     {{dat_out|safe}}
 
+    {% elif field.type in ["StringField", "IntegerField"] %}
+
+    {{dat_in|safe}}
+      <input type="text" name="{{ field.id }}" id="{{ field.id }}" class="{{style}}"  value="{{field.data or field.default or ''}}" placeholder="{{field.default or ''}}">
+    {{dat_out|safe}}
+
     {% else %}
 
     {{dat_in|safe}}
@@ -287,7 +293,7 @@
     {% else %}
 
     {{dat_in|safe}}
-      {{ field.data }}
+      {{ field.data or field.default or '' }}
     {{dat_out|safe}}
 
     {% endif %}

@@ -117,7 +117,7 @@ class PageForm(FlaskForm):
             starting_keys = self._fields.keys()
             for key in self._field_order:
                 if key not in starting_keys:
-                    raise(KeyError("Cannot find {} (from _field_order) in PageForm fields.".format(key)))
+                    raise(KeyError("Cannot find '{}' (from _field_order) in PageForm fields.".format(key)))
                 fields[key] = self._fields[key]
             for key in starting_keys:
                 if key not in fields:
@@ -229,29 +229,33 @@ class BlogCatalog(PageCatalog):
 ########################################
 
 class DisplayPictureField(w.StringField):
-    def __init__(self, label=None, validators=None, url=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, url=None, href=None, display_only=False, **kwargs):
         super(DisplayPictureField, self).__init__(label=label, validators=validators, **kwargs)
         self.url = url
         self.data = url
         self.href = href
+        self.display_only = display_only
 
 
 class DisplayTextField(w.StringField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(DisplayTextField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class ButtonUrlField(w.StringField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(ButtonUrlField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class StripeButtonField(w.StringField):
-    def __init__(self, label=None, validators=None, href=None, description=None, amount=0.00, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, description=None, amount=0.00, **kwargs):
         super(StripeButtonField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = None # reject any href linkage
+        self.display_only = display_only
 
 
 ##########################################
@@ -261,102 +265,117 @@ class StripeButtonField(w.StringField):
 ##########################################
 
 class BooleanField(w.BooleanField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(BooleanField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class DateField(w.DateField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(DateField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class DateTimeField(w.DateTimeField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(DateTimeField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class DecimalField(w.DecimalField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(DecimalField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class FileField(w.FileField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(FileField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 # class MultipleFileField(w.MultipleFileField):
-#     def __init__(self, label=None, validators=None, href=None, **kwargs):
+#     def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
 #         super(MultipleFileField, self).__init__(label=label, validators=validators, **kwargs)
 
 
 class FloatField(w.FloatField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(FloatField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class IntegerField(w.IntegerField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(IntegerField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class RadioField(w.RadioField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(RadioField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class SelectField(w.SelectField):
-    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, display_only=False, **kwargs):
         super(SelectField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
         self.href = href
         if not hasattr(choices, '__iter__'):
             if callable(choices):
                 self.choices = self.choices()
+        self.display_only = display_only
 
 
 class SelectMultipleField(w.SelectMultipleField):
-    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, coerce=w.compat.text_type, choices=None, href=None, display_only=False, **kwargs):
         super(SelectMultipleField, self).__init__(label=label, validators=validators, coerce=coerce, choices=choices, **kwargs)
         self.href = href
         if not hasattr(choices, '__iter__'):
             if callable(choices):
                 self.choices = self.choices()
+        self.display_only = display_only
 
 
 class SubmitField(w.SubmitField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(SubmitField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class StringField(w.StringField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, textarea=False, href=None, display_only=False, **kwargs):
         super(StringField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
+        self.textarea = textarea
 
 
 class HiddenField(w.HiddenField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(HiddenField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
 
 
 class PasswordField(w.PasswordField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(PasswordField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 
 
 class TextAreaField(w.TextAreaField):
-    def __init__(self, label=None, validators=None, href=None, **kwargs):
+    def __init__(self, label=None, validators=None, href=None, display_only=False, **kwargs):
         super(TextAreaField, self).__init__(label=label, validators=validators, **kwargs)
         self.href = href
+        self.display_only = display_only
 

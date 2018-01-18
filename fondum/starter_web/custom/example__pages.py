@@ -13,11 +13,11 @@ import random
 from sendmail import sendmail
 
 
-# /main/about/
+# /example/about/
 class About(Page):
 
     default_text = """
-==About {{DOMAIN}}
+==About def.test
 """
 
 
@@ -25,7 +25,7 @@ def mylookup():
     return [("aa", "Dynamic A"), ("bb", "Dynamic B")]
 
 
-# url will be /main/example-of-everything/
+# url will be /example/example-of-everything/
 class ExampleOfEverything(Page):
 
     default_text = """
@@ -74,7 +74,7 @@ They are (in order):
         dtf = DisplayTextField("My Displayed Text", default="abcdefg")
         submit = SubmitField("Send It")
 
-        def set_starting_values(self, **kwargs):
+        def set_field_values(self, new_page, **kwargs):
             self.dt.data = datetime.datetime.now()
             self.t.data = "Some starting text!\n...and some more!"
 
@@ -83,7 +83,7 @@ They are (in order):
             # this is where any database processing would happen
             #
             msg.flash("Got it! string={}, integer={}, etc.".format(wtf.s.data, wtf.i.data))
-            return msg.success("All good.", return_def="page_main_about")
+            return msg.success("All good.", return_def="page_example_about")
 
 
 
@@ -165,7 +165,7 @@ They are (in order):
 
 
 
-# /main/special/
+# /example/special/
 class Special(Page):
 
     # a "fondum_bypass" method, if defined, causes fondum to basically ignore
@@ -187,7 +187,7 @@ class Special(Page):
                 </p>
                 <ul>
                    {% for x in short_list %}
-                   <li><a href="/main/special-with-parm/{{x}}">{{x}}</li>
+                   <li><a href="/example/special-with-parm/{{x}}">{{x}}</li>
                    {% endfor %}
                 </ul>
               </body>
@@ -196,10 +196,10 @@ class Special(Page):
         return render_template_string(special_text, short_list=["one", "two"])
 
 
-# /main/special-with-parm/<myparm>
+# /example/special-with-parm/<myparm>
 class SpecialWithParm__myparm(Page):
 
-    # an example "fondum bypass" that has a route paramater (/main/special-with-parm/<myparm>)
+    # an example "fondum bypass" that has a route paramater (/example/special-with-parm/<myparm>)
     # this example also uses an html jinja file in the templates directory
 
     login_required = False
@@ -208,7 +208,7 @@ class SpecialWithParm__myparm(Page):
         return render_template("special-with-parm.html", kwargs=kwargs)
 
 
-# /main/example-sendmail/
+# /example/example-sendmail/
 class ExampleSendmail(Page):
 
     default_text = """
@@ -233,7 +233,7 @@ more subtley and with greater restrictions.
         msg_text = TextAreaField("Body (with creole markup):")
         submit = SubmitField("Send An Email")
 
-        def set_starting_values(self, **kwargs):
+        def set_field_values(self, new_page, **kwargs):
             self.msg_to.data = "test@example.com"
 
         def process_form(self, wtf, **kwargs):
@@ -250,7 +250,7 @@ more subtley and with greater restrictions.
             return result_msg
 
 
-# /main/flash
+# /example/flash
 class Flash(Page):
 
     default_text = """
@@ -280,8 +280,6 @@ A copy of that message will then flash on the page after submission.
             m = msg.message(self.message.data)
             m.set_category(self.category.data)
             return m
-
-
 # NOTE: Normally the following would be stored in the corresponding
 # 'x__models.py' file. So, in this case, it would be stored in
 # 'examples__models.py'. But I break the normal rule here to help with
@@ -292,12 +290,20 @@ import mongoengine as db
 
 
 class TestDocument(db.Document):
-    name = db.StringField(label="Full Name")
-    height = db.IntField()
+    name = db.StringField(label="Full Name", required=True)
+    height = db.IntField(required=True)
     age = db.IntField()
     hair_color = db.StringField(
         choices=('black', 'brown', 'blond', 'red', 'grey'),
         radio=True
+    )
+    shirt_color = db.StringField(
+        label="Shirt Color Assigned",
+        default="blue",
+        display_only=True,
+    )
+    notes = db.StringField(
+        textarea=True
     )
 
 #
@@ -320,7 +326,7 @@ def create_testDocument(wtf):
     return msg.success('Created TestDocument "{}"'.format(doc.name))
 
 
-# /main/flash
+# /example/flash
 class CopyFields(Page):
 
     default_text = """
@@ -339,16 +345,22 @@ NOTE: the library 'Flask-MongoEngine' also has a 'model_form' function that has 
 
     class MainForm(PageForm):
 
+        age = IntegerField("Current Age")
         submit = SubmitField("Submit")
         # _import_fields = models.TestDocument
         _import_fields = TestDocument
 
         # _field_order is strictly optional; without it, the imports are simply appended
-        _field_order = ['name', 'age', 'height', 'hair_color', 'submit']
+        _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'notes', 'submit']
 
         def process_form(self, wtf, **kwargs):
             # return database.create_testDocument()
-            return create_testDocument()
+            return create_testDocument(wtf)
+
+        def set_field_values(self, new_page, **kwargs):
+            if new_page:
+                self.age.data = 22
+
 
 
 # eof

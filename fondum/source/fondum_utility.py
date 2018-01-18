@@ -1,5 +1,6 @@
 import copy
 import collections
+import wtforms
 
 ####################################################
 #
@@ -10,7 +11,7 @@ import collections
 # TBD: add a 'merge_fields' function that does do insertion into the dest object.
 
 
-def copy_fields(src=None, dest=None):
+def copy_fields(src=None, dest=None, debug=False):
     if src is None:
         return {}
     if dest is None:
@@ -19,15 +20,21 @@ def copy_fields(src=None, dest=None):
     dest_handler, dest_fields, dest_alias_map = parse_fields(dest)
     for k, v in src_fields.iteritems():
         if k in dest_fields:
-            set_field(k, v, dest, dest_fields, dest_handler)
+            set_field(k, v, dest, dest_fields, dest_handler, src_handler)
         if k in dest_alias_map:
-            set_field(dest_alias_map[k], v, dest, dest_fields, dest_handler)
+            set_field(dest_alias_map[k], v, dest, dest_fields, dest_handler, src_handler)
+    if debug: zak()
     if dest_handler in ["list", "mongoengine", "object"]:
         return dest
     return dest_fields
 
 
-def set_field(k, v, dest, dest_copy, dest_handler):
+def set_field(k, v, dest, dest_copy, dest_handler, src_handler):
+    if src_handler in ["wtf"]:
+        if v.type == "RadioField":
+            if v.data == u"None":
+                v.data = None  # this is, I believe, some kind of WTForms bug
+        v = v.data
     if dest_handler in ["list"]:
         index = int(k)
         dest[index] = v
@@ -120,8 +127,9 @@ def convert_MongoEngineDoc_to_PageForm(doc, wtf):
     for key in src_fields:
         if not key.startswith("_"):
             if key != "id":
-                field = mapfield_ME_to_Form(key, doc.__dict__[key])
-                setattr(wtf, key, field)
+                if key not in dir(wtf):
+                    field = mapfield_ME_to_Form(key, doc.__dict__[key])
+                    setattr(wtf, key, field)
 
 
 def mapfield_ME_to_Form(key, entry):
@@ -132,6 +140,7 @@ def mapfield_ME_to_Form(key, entry):
         label = entry.label
     else:
         label = entry.db_field
+    validators = []
     #
     # id field type
     #
@@ -141,17 +150,40 @@ def mapfield_ME_to_Form(key, entry):
         r = page.DateTimeField(label)
     elif "IntField" in t:
         r = page.IntegerField(label)
+        validators.append(wtforms.validators.NumberRange())
     else:
         r = page.StringField(label)
     #
     # check for SelectField
     #
+    if hasattr(entry, "textarea"):
+        if entry.textarea:
+            r = page.TextAreaField(label)
     if entry.choices:
         choices = [(key, key) for key in entry.choices]
         if hasattr(entry, 'radio') and entry.radio==True:
             r = page.RadioField(label, choices=choices)
         else:
             r = page.SelectField(label, choices=choices)
+    #
+    # generic options
+    #
+    if entry.default is not None:
+        r.kwargs["default"] = entry.default
+    if hasattr(entry, "description"):
+        r.kwargs["description"] = entry.description
+    if entry.required is True:
+        validators.append(wtforms.validators.Required())
+    else:
+        #  note: required=False, which is the default; removes all form of validation
+        validators = [wtforms.validators.Optional()]
+    if hasattr(entry, "display_only"):
+        r.kwargs["display_only"] = entry.display_only
+    #
+    # append validators (ONLY if validators in use)
+    #
+    if validators:
+        r.kwargs["validators"] = validators
     return r
 
     #  NOT YET DONE (defaults to StringField)

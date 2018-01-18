@@ -25,7 +25,11 @@
           {% for field in page.wtf %}
 
             {% if page.wtf.process_form %}
-              {{ render_form_field(field, page.wtf._form_style) }}
+              {% if field.display_only %}
+                {{ render_display_field(field, page.wtf._form_style) }}
+              {% else %}
+                {{ render_form_field(field, page.wtf._form_style) }}
+              {% endif %}
             {% else %}
               {{ render_display_field(field, page.wtf._form_style) }}
             {% endif %}
@@ -40,7 +44,11 @@
         {% for field in page.wtf %}
 
           {% if page.wtf.process_form %}
-            {{ render_form_field(field, page.wtf._form_style) }}
+            {% if field.display_only %}
+              {{ render_display_field(field, page.wtf._form_style) }}
+            {% else %}
+              {{ render_form_field(field, page.wtf._form_style) }}
+            {% endif %}
           {% else %}
             {{ render_display_field(field, page.wtf._form_style) }}
           {% endif %}
@@ -55,7 +63,11 @@
 
         <li>
           {% if page.wtf.process_form %}
-            {{ render_form_field(field, page.wtf._form_style) }}
+            {% if field.display_only %}
+              {{ render_display_field(field, page.wtf._form_style) }}
+            {% else %}
+              {{ render_form_field(field, page.wtf._form_style) }}
+            {% endif %}
           {% else %}
             {{ render_display_field(field, page.wtf._form_style) }}
           {% endif %}

@@ -73,22 +73,32 @@ def page_handler(page, source_def, key, **kwargs):
     # form handling
     #
     if page.wtf:
-        if page.wtf.validate_on_submit():
-            if not hasattr(page.wtf, "process_form"):
-                msg.flash('FONDUM error: no process_form method found', t="bug")
-                return redirect(url_for(source_def))
-            result = page.wtf.process_form(page.wtf, **kwargs)
-            if isinstance(result, Response):
-                return result
-            msg.flash(result)
-            if result.return_def:
-                if result.return_def_parms:
-                    return redirect(url_for(result.return_def, **result.return_def_parms))
-                return redirect(url_for(result.return_def))
-            return redirect(url_for(source_def, **kwargs))
+        if page.wtf.is_submitted():
+            if page.wtf.validate_on_submit():
+                if not hasattr(page.wtf, "process_form"):
+                    msg.flash('FONDUM error: no process_form method found', t="bug")
+                    return redirect(url_for(source_def))
+                result = page.wtf.process_form(page.wtf, **kwargs)
+                if isinstance(result, Response):
+                    return result
+                msg.flash(result)
+                if result.return_def:
+                    if result.return_def_parms:
+                        return redirect(url_for(result.return_def, **result.return_def_parms))
+                    return redirect(url_for(result.return_def))
+                return redirect(url_for(source_def, **kwargs))
+            else:
+                if hasattr(page.wtf, 'set_field_values'):
+                    result = page.wtf.set_field_values(False, **kwargs)
+                    if msg.is_msg(result):
+                        msg.flash(result)
+                        if result.return_def:
+                            if result.return_def_parms:
+                                return redirect(url_for(result.return_def, **result.return_def_parms))
+                            return redirect(url_for(result.return_def))
         else:
-            if hasattr(page.wtf, 'set_starting_values'):
-                result = page.wtf.set_starting_values(**kwargs)
+            if hasattr(page.wtf, 'set_field_values'):
+                result = page.wtf.set_field_values(True, **kwargs)
                 if msg.is_msg(result):
                     msg.flash(result)
                     if result.return_def:
