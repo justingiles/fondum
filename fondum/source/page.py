@@ -93,8 +93,7 @@ class Page(object):
         # PROCESS MAIN FORM
         #
         if self.has_form:
-            if hasattr(self.MainForm, '_import_fields'):
-                fondum_utility.convert_MongoEngineDoc_to_PageForm(self.MainForm._import_fields, self.MainForm)
+            # fondum_utility.handle_form_imports(self.MainForm)
             self.wtf = self.MainForm(outer_page_instance=self, style=self.form_style)
         #
         self.status = msg.success("page processed")
@@ -106,6 +105,7 @@ FORM_STYLES = ["basic", "inline", "horizontal"]
 class PageForm(FlaskForm):
 
     def __init__(self, outer_page_instance=None, style=None, *args, **kwargs):
+        fondum_utility.handle_form_imports(self)
         FlaskForm.__init__(self, *args, **kwargs)
         self.page = outer_page_instance
         self._form_style = style or FORM_STYLES[0]

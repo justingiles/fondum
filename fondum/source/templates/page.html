@@ -85,32 +85,34 @@
 
 
 {% if page.has_tables %}
+  {% if page.display_table.table_name or page.tables|length > 1 %}
 <ul style="list-style: none; padding: 0; margin: 0;">
-{% for table in page.tables %}
-    <li style="display: inline; border: solid; border-width: 1px 1px 0 1px; margin: 0 5px 0 0; {{'font-weight: bold;' if table.key_name==page.display_table.key_name }}">
-        {% if table.key_name==page.display_table.key_name %}
-        {% else %}
-          {% if page.display_table.key_name == page.default_table_name %}
-            {% if table.key_name!=page.default_table_name %}
-            <a href="./{{table.key_name}}" style="padding: 0 10px;">
-            {% else %}
-            <a href="." style="padding: 0 10px;">
-            {% endif %}
+    {% for table in page.tables %}
+  <li style="display: inline; border: solid; border-width: 1px 1px 0 1px; margin: 0 5px 0 0; {{'font-weight: bold;' if table.key_name==page.display_table.key_name }}">
+      {% if table.key_name==page.display_table.key_name %}
+      {% else %}
+        {% if page.display_table.key_name == page.default_table_name %}
+          {% if table.key_name!=page.default_table_name %}
+          <a href="./{{table.key_name}}" style="padding: 0 10px;">
           {% else %}
-            {% if table.key_name!=page.default_table_name %}
-            <a href="../{{table.key_name}}" style="padding: 0 10px;">
-            {% else %}
-            <a href=".." style="padding: 0 10px;">
-            {% endif %}
+          <a href="." style="padding: 0 10px;">
+          {% endif %}
+        {% else %}
+          {% if table.key_name!=page.default_table_name %}
+          <a href="../{{table.key_name}}" style="padding: 0 10px;">
+          {% else %}
+          <a href=".." style="padding: 0 10px;">
           {% endif %}
         {% endif %}
-            <span class="table-header">{{table.table_name}}</span>
-        {% if table.key_name!=page.display_table.key_name %}
-        </a>
-        {% endif %}
-    </li>
-{% endfor %}
+      {% endif %}
+          <span class="table-header">{{table.table_name}}</span>
+      {% if table.key_name!=page.display_table.key_name %}
+      </a>
+      {% endif %}
+  </li>
+    {% endfor %}
 </ul>
+  {% endif %}
 <div style="border-top: 1px solid;">
     <table>
         {% if page.display_table.header %}

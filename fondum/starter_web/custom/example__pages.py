@@ -7,10 +7,11 @@ from page import Page, PageForm, PageTable, \
     FloatField, IntegerField, RadioField, SelectField, \
     SelectMultipleField, SubmitField, StringField, \
     HiddenField, PasswordField, TextAreaField
-from flask import render_template, render_template_string
+from flask import render_template, render_template_string, redirect
 import datetime
 import random
 from sendmail import sendmail
+import fondum_utility
 
 
 # /example/about/
@@ -295,6 +296,10 @@ class TestDocument(db.Document):
     age = db.IntField()
     hair_color = db.StringField(
         choices=('black', 'brown', 'blond', 'red', 'grey'),
+    )
+    handedness = db.StringField(
+        label = "Left/Right Handed",
+        choices=('left', 'right'),
         radio=True
     )
     shirt_color = db.StringField(
@@ -326,11 +331,32 @@ def create_testDocument(wtf):
     return msg.success('Created TestDocument "{}"'.format(doc.name))
 
 
-# /example/flash
+def read_testDocument(doc_id):
+    doc = TestDocument.objects(id=doc_id).first()
+    if doc:
+        return doc
+    return msg.err("Unable to locate document")
+
+
+def readlist_testDocument_all():
+    tdl = TestDocument.objects()
+    return tdl
+
+
+def delete_testDocument(doc_id):
+    doc = read_testDocument(doc_id)
+    if msg.is_message(doc):
+        return doc
+    doc.delete()
+    return msg.success("TestDocument document deleted.")
+
+
+# /example/copy-fields
 class CopyFields(Page):
 
     default_text = """
 == Example of the Copy Fields Function
+===List Documents
 
 "Fields" are importable in both directions.
 * One can import the fields of a MongoEngine Document into a PageForm (child of WTForms) with the '_import_fields=obj' class variable.
@@ -341,6 +367,46 @@ See the corresponding source code for this page for the example of use.
 NOTE: By definition, '_import_fields' skips the 'id' fields or any field starting with an underscore.
 
 NOTE: the library 'Flask-MongoEngine' also has a 'model_form' function that has function similar to '_import_fields'.
+
+This particular page reads the contents of the 'TestDocument' collection and shows the entries.
+"""
+
+    class TableOne(PageTable):
+        key_name = "main"
+        table_name = ""  # an empty table name (and only one table) suppresses the tabs
+
+        class Row(PageForm):
+            _import_fields = TestDocument
+            # _field_order is strictly optional; without it, the imports are simply appended
+            delete = ButtonUrlField("Delete")
+            _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'notes', "handedness", "delete"]
+
+        class CreateButtonRow(PageForm):
+            create = ButtonUrlField("Create", href="/example/copy-fields-new/")
+
+        def process_table(self, **kwargs):
+            self.set_header(self.Row())
+            tdl = readlist_testDocument_all()
+            for doc in tdl:
+                r = self.Row()
+                fondum_utility.copy_fields(src=doc, dest=r)
+                r.delete.href = "/example/copy-fields-delete/{}/".format(doc.id)
+                self.rows.append(r)
+            self.rows.append(self.CreateButtonRow())
+            return msg.success("all documents")
+
+    table_order = [
+        TableOne,
+    ]
+
+# /example/copy-fields-new
+class CopyFieldsNew(Page):
+
+    default_text = """
+== Example of the Copy Fields Function
+=== Create New Record
+
+This particular page creates a new document in the TestDocument collection.
 """
 
     class MainForm(PageForm):
@@ -355,12 +421,23 @@ NOTE: the library 'Flask-MongoEngine' also has a 'model_form' function that has 
 
         def process_form(self, wtf, **kwargs):
             # return database.create_testDocument()
-            return create_testDocument(wtf)
+            response = create_testDocument(wtf)
+            if msg.is_good(response):
+                response.return_def = "page_example_copy_fields"
+            return response
 
         def set_field_values(self, new_page, **kwargs):
             if new_page:
                 self.age.data = 22
 
 
+# /example/copy-fields-delete/<id>
+class CopyFieldsDelete__id(Page):
+
+    def fondum_bypass(self, **kwargs):
+        doc_id = kwargs["id"]
+        response = delete_testDocument(doc_id)
+        msg.flash(response)
+        return redirect("/example/copy-fields/")
 
 # eof

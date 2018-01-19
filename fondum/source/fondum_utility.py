@@ -40,6 +40,8 @@ def set_field(k, v, dest, dest_copy, dest_handler, src_handler):
         dest[index] = v
     elif dest_handler in ["mongoengine", "object"]:
         dest.__setitem__(k, v)
+    elif dest_handler in ["wtf"]:
+        dest._fields[k].data = v
     else:  # else dest_handler is "dictionary" or behaving like a dictionary
         dest[k] = v
     dest_copy[str(k)] = v
@@ -118,7 +120,14 @@ def parse_fields(src):
     return src_handler, fields, alias_field_map
 
 
-def convert_MongoEngineDoc_to_PageForm(doc, wtf):
+def handle_form_imports(wtf):
+    ''' this is an odd function as WTForms are odd birds. In order to handle ordering of fields,
+    they have a 'meta' function that moves class variables to another class variable list
+    called '_unbound_fields' during class definition. this function must be called in __init__
+    before the super __init__ is called. '''
+    if not hasattr(wtf, '_import_fields'):
+        return
+    doc = wtf._import_fields
     (src_handler, src_fields, alias_field_map) = parse_fields(doc)
     if src_handler == "mongoengine":
         raise(ImportError("Unable to do _import_fields on a mongoengine doc instance."))
@@ -129,8 +138,25 @@ def convert_MongoEngineDoc_to_PageForm(doc, wtf):
             if key != "id":
                 if key not in dir(wtf):
                     field = mapfield_ME_to_Form(key, doc.__dict__[key])
-                    setattr(wtf, key, field)
+                    wtf._unbound_fields.append((key, field))
 
+#  LEGACY VERSION USED ON CLASS BEFORE INSTANCING
+#
+# def handle_form_imports(wtf):
+#     if not hasattr(wtf, '_import_fields'):
+#         return
+#     doc = wtf._import_fields
+#     (src_handler, src_fields, alias_field_map) = parse_fields(doc)
+#     if src_handler == "mongoengine":
+#         raise(ImportError("Unable to do _import_fields on a mongoengine doc instance."))
+#     if src_handler != "mongoengine_class":
+#         raise(Exception("Unable to do _import_fields. Is this assgined a mongoengine document?"))
+#     for key in src_fields:
+#         if not key.startswith("_"):
+#             if key != "id":
+#                 if key not in dir(wtf):
+#                     field = mapfield_ME_to_Form(key, doc.__dict__[key])
+#                     setattr(wtf, key, field)
 
 def mapfield_ME_to_Form(key, entry):
     import page  # this is done inside the function to prevent a loop

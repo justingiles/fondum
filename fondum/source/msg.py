@@ -151,6 +151,9 @@ def is_msg(test_object):
         return True
     return False
 
+def is_message(test_object):
+    return is_msg(test_object)
+
 
 def msg(msg, level=DISP_SHOW, return_def=None, **kwargs):
     fe = FlashEvent()
@@ -227,6 +230,14 @@ def err(msg, level=DISP_SHOW, return_def=None, **kwargs):
 
 
 def error(*args, **kwargs):
+    return err(*args, **kwargs)
+
+
+def fail(*args, **kwargs):
+    return err(*args, **kwargs)
+
+
+def failure(*args, **kwargs):
     return err(*args, **kwargs)
 
 
