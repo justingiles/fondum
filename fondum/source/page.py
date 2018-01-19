@@ -119,9 +119,6 @@ class PageForm(FlaskForm):
                 if key not in starting_keys:
                     raise(KeyError("Cannot find '{}' (from _field_order) in PageForm fields.".format(key)))
                 fields[key] = self._fields[key]
-            for key in starting_keys:
-                if key not in fields:
-                    fields[key] = self._fields[key]
             self._fields = fields
 
     def pull_data(self, source):
