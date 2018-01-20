@@ -119,6 +119,8 @@ class PageForm(FlaskForm):
                 if key not in starting_keys:
                     raise(KeyError("Cannot find '{}' (from _field_order) in PageForm fields.".format(key)))
                 fields[key] = self._fields[key]
+            if 'csrf_token' not in fields:
+                fields['csrf_token'] = self._fields['csrf_token']
             self._fields = fields
 
     def pull_data(self, source):

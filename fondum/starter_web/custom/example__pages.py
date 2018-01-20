@@ -281,6 +281,8 @@ A copy of that message will then flash on the page after submission.
             m = msg.message(self.message.data)
             m.set_category(self.category.data)
             return m
+
+
 # NOTE: Normally the following would be stored in the corresponding
 # 'x__models.py' file. So, in this case, it would be stored in
 # 'examples__models.py'. But I break the normal rule here to help with
@@ -310,6 +312,13 @@ class TestDocument(db.Document):
     notes = db.StringField(
         textarea=True
     )
+    silly = db.StringField(
+        label="Can't See Me",
+        default="blimey",
+        required=True,
+        hide=True
+    )
+    income = db.FloatField(required=True)
 
 #
 # "extra" labels supported:
@@ -379,7 +388,7 @@ This particular page reads the contents of the 'TestDocument' collection and sho
             _import_fields = TestDocument
             # _field_order is strictly optional; without it, the imports are simply appended
             delete = ButtonUrlField("Delete")
-            _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'notes', "handedness", "delete"]
+            _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'notes', "handedness", "silly", 'income', "delete"]
 
         class CreateButtonRow(PageForm):
             create = ButtonUrlField("Create", href="/example/copy-fields-new/")
@@ -417,7 +426,7 @@ This particular page creates a new document in the TestDocument collection.
         _import_fields = TestDocument
 
         # _field_order is strictly optional; without it, the imports are simply appended
-        _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'notes', 'submit']
+        _field_order = ['name', 'age', 'height', 'hair_color', 'shirt_color', 'income', 'notes', 'silly', 'handedness', 'submit']
 
         def process_form(self, wtf, **kwargs):
             # return database.create_testDocument()

@@ -1,6 +1,7 @@
 import copy
 import collections
 import wtforms
+import re
 
 ####################################################
 #
@@ -20,21 +21,18 @@ def copy_fields(src=None, dest=None, debug=False):
     dest_handler, dest_fields, dest_alias_map = parse_fields(dest)
     for k, v in src_fields.iteritems():
         if k in dest_fields:
-            set_field(k, v, dest, dest_fields, dest_handler, src_handler)
+            final_value = intepret_source_value(v, src_handler, dest_handler)
+            set_field(k, final_value, dest, dest_fields, dest_handler)
         if k in dest_alias_map:
-            set_field(dest_alias_map[k], v, dest, dest_fields, dest_handler, src_handler)
+            final_value = intepret_source_value(v, src_handler, dest_handler)
+            set_field(dest_alias_map[k], final_value, dest, dest_fields, dest_handler)
     if debug: zak()
     if dest_handler in ["list", "mongoengine", "object"]:
         return dest
     return dest_fields
 
 
-def set_field(k, v, dest, dest_copy, dest_handler, src_handler):
-    if src_handler in ["wtf"]:
-        if v.type == "RadioField":
-            if v.data == u"None":
-                v.data = None  # this is, I believe, some kind of WTForms bug
-        v = v.data
+def set_field(k, v, dest, dest_fields, dest_handler):
     if dest_handler in ["list"]:
         index = int(k)
         dest[index] = v
@@ -44,8 +42,25 @@ def set_field(k, v, dest, dest_copy, dest_handler, src_handler):
         dest._fields[k].data = v
     else:  # else dest_handler is "dictionary" or behaving like a dictionary
         dest[k] = v
-    dest_copy[str(k)] = v
+    dest_fields[str(k)] = v
     return
+
+
+def intepret_source_value(value, src_handler, dest_handler):
+    #  we are passing in 'dest_handler' just in case some odd scenerio
+    #  requires special handling for particular src/dest combiniations
+    final = value
+    if src_handler == "wtf":
+        if value.type == "RadioField":
+            if value.data == u"None":
+                value.data = None  # this is, I believe, some kind of WTForms bug
+        final = value.data
+    elif src_handler == "mongoengine":
+        v_type = str(type(value))
+        final = value.value
+        if 'ObjectId' in v_type:
+            final = str(value.value)
+    return final
 
 
 def parse_fields(src):
@@ -83,11 +98,13 @@ def parse_fields(src):
             fields[str(k)] = copy.deepcopy(v)
     elif src_handler == "mongoengine":
         for k, v in src._fields.iteritems():
-            strk = str(k)
-            fields[strk] = src.__getitem__(k)
-            v_type = str(type(fields[strk]))
-            if 'ObjectId' in v_type:
-                fields[strk] = str(fields[strk])
+            fields[k] = src._fields[k]
+            fields[k].value = src.__getitem__(k) # value is a non-standard attr we will use
+            # strk = str(k)
+            # fields[strk] = src.__getitem__(k)
+            # v_type = str(type(fields[strk]))
+            # if 'ObjectId' in v_type:
+            #     fields[strk] = str(fields[strk])
     elif src_handler == "mongoengine_class":
         for k, v in src._fields.iteritems():
             fields[k] = v
@@ -140,47 +157,43 @@ def handle_form_imports(wtf):
                     field = mapfield_ME_to_Form(key, doc.__dict__[key])
                     wtf._unbound_fields.append((key, field))
 
-#  LEGACY VERSION USED ON CLASS BEFORE INSTANCING
-#
-# def handle_form_imports(wtf):
-#     if not hasattr(wtf, '_import_fields'):
-#         return
-#     doc = wtf._import_fields
-#     (src_handler, src_fields, alias_field_map) = parse_fields(doc)
-#     if src_handler == "mongoengine":
-#         raise(ImportError("Unable to do _import_fields on a mongoengine doc instance."))
-#     if src_handler != "mongoengine_class":
-#         raise(Exception("Unable to do _import_fields. Is this assgined a mongoengine document?"))
-#     for key in src_fields:
-#         if not key.startswith("_"):
-#             if key != "id":
-#                 if key not in dir(wtf):
-#                     field = mapfield_ME_to_Form(key, doc.__dict__[key])
-#                     setattr(wtf, key, field)
+
+ME_PATTERN = re.compile('mongoengine[.]fields[.](\w+)\s')
+
 
 def mapfield_ME_to_Form(key, entry):
     import page  # this is done inside the function to prevent a loop
 
     t = str(entry)
+    # t should be in form of '<mongoengine.fields.StringField object at 0x7f83b229bd90>'
+    g = ME_PATTERN.search(t)
+    if g:
+        fld = g.groups()[0]
+    else:
+        fld = t
     if hasattr(entry, "label"):
         label = entry.label
     else:
         label = entry.db_field
     validators = []
     #
-    # id field type
+    # id general field type
     #
-    if "BooleanField" in t:
+    if fld in ["BooleanField"]:
         r = page.BooleanField(label)
-    elif "DateTimeField" in t:
+    elif fld in ["DateTimeField"]:
         r = page.DateTimeField(label)
-    elif "IntField" in t:
+    elif fld in ["IntField"]:
         r = page.IntegerField(label)
         validators.append(wtforms.validators.NumberRange())
+    elif fld in ["DecimalField"]:
+        r = page.DecimalField(label)
+    elif fld in ["FloatField"]:
+        r = page.FloatField(label)
     else:
         r = page.StringField(label)
     #
-    # check for SelectField
+    # check for specialty fields
     #
     if hasattr(entry, "textarea"):
         if entry.textarea:
@@ -191,6 +204,9 @@ def mapfield_ME_to_Form(key, entry):
             r = page.RadioField(label, choices=choices)
         else:
             r = page.SelectField(label, choices=choices)
+    if hasattr(entry, 'hide'):
+        if entry.hide:
+            r = page.HiddenField(label)
     #
     # generic options
     #
@@ -215,14 +231,12 @@ def mapfield_ME_to_Form(key, entry):
     #  NOT YET DONE (defaults to StringField)
     # if "BinaryField
     # if "ComplexDateTimeField
-    # if "DecimalField
     # if "DictField
     # if "DynamicField
     # if "EmailField
     # if "EmbeddedDocumentField
     # if "EmbeddedDocumentListField
     # if "FileField
-    # if "FloatField
     # if "GenericEmbeddedDocumentField
     # if "GenericReferenceField
     # if "GeoPointField

@@ -3,7 +3,7 @@
 
 {% block body %}
 
-{% from "formhelpers.html" import render_form_field, render_display_field %}
+{% from "formhelpers.html" import render_form, render_form_field, render_display_field %}
 
 <p>
     <div class="creole">
@@ -18,65 +18,9 @@
     {% if page.wtf.process_form %}
     <form action="" enctype="multipart/form-data" method="POST">
     {% endif %}
-      {% if page.wtf._form_style == "inline" %}
 
-      <div class="formlist">
-        <div class="inline_form">
-          {% for field in page.wtf %}
+      {{ render_form(page.wtf, page.wtf._form_style)}}
 
-            {% if page.wtf.process_form %}
-              {% if field.display_only %}
-                {{ render_display_field(field, page.wtf._form_style) }}
-              {% else %}
-                {{ render_form_field(field, page.wtf._form_style) }}
-              {% endif %}
-            {% else %}
-              {{ render_display_field(field, page.wtf._form_style) }}
-            {% endif %}
-
-          {% endfor %}
-        </div>
-      </div>
-
-      {% elif page.wtf._form_style == "horizontal" %}
-
-      <div class="formlist">
-        {% for field in page.wtf %}
-
-          {% if page.wtf.process_form %}
-            {% if field.display_only %}
-              {{ render_display_field(field, page.wtf._form_style) }}
-            {% else %}
-              {{ render_form_field(field, page.wtf._form_style) }}
-            {% endif %}
-          {% else %}
-            {{ render_display_field(field, page.wtf._form_style) }}
-          {% endif %}
-
-        {% endfor %}
-      </div>
-
-      {% else %}
-
-      <ul class="formlist">
-        {% for field in page.wtf %}
-
-        <li>
-          {% if page.wtf.process_form %}
-            {% if field.display_only %}
-              {{ render_display_field(field, page.wtf._form_style) }}
-            {% else %}
-              {{ render_form_field(field, page.wtf._form_style) }}
-            {% endif %}
-          {% else %}
-            {{ render_display_field(field, page.wtf._form_style) }}
-          {% endif %}
-        </li>
-
-        {% endfor %}
-      </ul>
-
-      {% endif %}
     {% if page.wtf.process_form %}
     </form>
     {% endif %}

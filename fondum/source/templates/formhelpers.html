@@ -1,3 +1,71 @@
+{% macro render_form(wtf, form_style) -%}
+
+  {% if form_style == "inline" %}
+
+  <div class="formlist">
+    <div class="inline_form">
+      {% for field in wtf %}
+
+        {% if wtf.process_form %}
+          {% if field.display_only %}
+            {{ render_display_field(field, form_style) }}
+          {% else %}
+            {{ render_form_field(field, form_style) }}
+          {% endif %}
+        {% else %}
+          {{ render_display_field(field, form_style) }}
+        {% endif %}
+
+      {% endfor %}
+    </div>
+  </div>
+
+  {% elif form_style == "horizontal" %}
+
+  <div class="formlist">
+    {% for field in wtf %}
+
+      {% if wtf.process_form %}
+        {% if field.display_only %}
+          {{ render_display_field(field, form_style) }}
+        {% else %}
+          {{ render_form_field(field, form_style) }}
+        {% endif %}
+      {% else %}
+        {{ render_display_field(field, form_style) }}
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <ul class="formlist">
+    {% for field in wtf %}
+
+    <li>
+      {% if wtf.process_form %}
+        {% if field.display_only %}
+          {{ render_display_field(field, form_style) }}
+        {% else %}
+          {{ render_form_field(field, form_style) }}
+        {% endif %}
+      {% else %}
+        {{ render_display_field(field, form_style) }}
+      {% endif %}
+    </li>
+
+    {% endfor %}
+  </ul>
+
+  {% endif %}
+
+{% endmacro %}
+
+
+
+
+
 {% macro render_form_field(field, style) -%}
 
   {% if field.type in ["HiddenField", "CSRFTokenField"] %}
@@ -160,6 +228,8 @@
 
 
 {% macro render_display_field(field, style) -%}
+
+  <input type="hidden" name="{{field.id}}" id="{{field.id}}" value="{{field.data or field.default or ''}}">
 
   {% if field.type in ["HiddenField", "CSRFTokenField"] %}
 
