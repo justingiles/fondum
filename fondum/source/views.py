@@ -1,4 +1,4 @@
-from app import app, logger
+from app import app
 from flask import Flask, request, g, redirect, url_for, \
     render_template, send_file, send_from_directory, abort
 from flask_login import login_user, logout_user, current_user, login_required, LoginManager
@@ -10,6 +10,8 @@ import msg
 import admin__database as database
 import parsing
 from s3 import s3_upload, static_proxy
+
+logger = app.logger
 
 
 @app.route('/favicon.ico')
@@ -58,11 +60,11 @@ def page_handler(page, source_def, key, **kwargs):
         return redirect(url_for('index'))
     if page.admin_required:
         if not g.admin_flag:
-            msg.flash('You must be an administrator.', t="warning", loglevel=logging.WARNING)
+            msg.flash('You must be an administrator.', t="warning", log_level=logging.WARNING)
             return redirect(url_for('index'))
     if page.login_required:
         if not current_user.is_authenticated:
-            msg.flash('You must be logged in.', t="warning", loglevel=logging.INFO)
+            msg.flash('You must be logged in.', t="warning", log_level=logging.INFO)
             return redirect(url_for('index'))
     #
     # handle purposeful bypass
@@ -112,7 +114,7 @@ def page_handler(page, source_def, key, **kwargs):
     html = parsing.generate_html(article, page)
     #
     #
-    logger.debug("Served Page /{}/".format(key))
+    # logger.debug("Served Page /{}/".format(key))
     return render_template(
         'page.html',
         page=page,

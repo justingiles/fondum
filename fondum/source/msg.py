@@ -34,56 +34,38 @@ MSG_CAT_MAP = {
 }
 FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
 
-
-# MSG_FOREGROUND = {
-#     DEFAULT: "White",
-#     SUCCESS: "White",
-#     INFO: "White",
-#     WARNING: "White",
-#     DANGER: "White"
-# }
-# MSG_BACKGROUND = {
-#     DEFAULT: "#337ab7",    
-#     SUCCESS: "#5cb85c",
-#     INFO: "#5bc0de",
-#     WARNING: "#f0ad4e",
-#     DANGER: "#d9534f"
-# }
+# answers question, "is it good?"
+MSG_CAT_JUDGEMENT = {
+    DEFAULT: True,
+    SUCCESS: True,
+    INFO: True,
+    WARNING: True,
+    DANGER: False    
+}
 
 #
 # LOGGING LEVELS
 #
-LOG_DEBUG = 0             # See Python "logging" for general interpretation
-LOG_INFO = 1              # as a general rule, these levels match up with the PRESENTATION display_levels below
-LOG_WARNING = 2
-LOG_ERROR = 3
-LOG_CRITICAL = 4
-
-LOG_LEVEL_MAP = [10, 20, 30, 40, 50]
 LOG_DESCRIPTION = {
-    LOG_DEBUG: "DEBUG",
-    LOG_INFO: "LOG_WARNING",
-    LOG_WARNING: "WARNING",
-    LOG_ERROR: "ERROR",
-    LOG_CRITICAL: "CRITICAL"
+    logging.DEBUG: "DEBUG",
+    logging.INFO: "INFO",
+    logging.WARNING: "WARNING",
+    logging.ERROR: "ERROR",
+    logging.CRITICAL: "CRITICAL"
 }
 
 #
 # PRESENTATION
 #
 
-DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
+DISP_NONE = 0             # don't display at all
 DISP_SHOW = 1             # show to end-user; this is the default level; progress continues
-DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive; but progress still continues
-DISP_ERROR = 3            # this is an error that should be shown to user; a problem needs to be fixed
-DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
+DISP_ALERT = 2          # show to end-user; same as "display" but slightly more aggressive
 
 DISP_DESCRIPTION = {
-    DISP_LOG: "LOG",
+    DISP_NONE: "NONE",
     DISP_SHOW: "SHOW",
-    DISP_WARNING: "WARNING",
-    DISP_ERROR: "ERROR",
-    DISP_SECURITY_ALERT: "SECURITY_ALERT",
+    DISP_ALERT: "WARNING",
 }
 
 
@@ -114,21 +96,10 @@ class FlashEvent(object):
         self.message = ""
         self.event_type = DEFAULT
         self.display_level = DISP_SHOW
-        self.log_level = LOG_LEVEL_MAP[LOG_INFO]
+        self.log_level = logging.INFO
         self.return_def = None
         self.return_def_parms = {}
         self.flash_event = True
-
-    def logger_level(self):
-        return LOG_LEVEL_MAP[self.log_level]
-
-    def import_logger_level(self, python_logger_level):
-        level = 0
-        for n in range(5):
-            if python_logger_level >= LOG_LEVEL_MAP[n]:
-                level = n
-        self.log_level = level
-        return
 
     def set_category(self, category):
         if category in MSG_CAT_MAP:
@@ -155,12 +126,14 @@ def is_message(test_object):
     return is_msg(test_object)
 
 
-def msg(msg, level=DISP_SHOW, return_def=None, **kwargs):
+def msg(msg, display_level=DISP_SHOW, log_level=logging.INFO, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DEFAULT
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -170,45 +143,53 @@ def message(*args, **kwargs):
     return msg(*args, **kwargs)
 
 
-def note(msg, level=DISP_LOG, return_def=None, **kwargs):
+def note(msg, display_level=DISP_NONE, log_level=logging.INFO, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DEFAULT
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def success(msg, level=DISP_SHOW, return_def=None, **kwargs):
+def success(msg, display_level=DISP_SHOW, log_level=logging.DEBUG, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = SUCCESS
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def info(msg, level=DISP_SHOW, return_def=None, **kwargs):
+def info(msg, display_level=DISP_SHOW, log_level=logging.INFO, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = INFO
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
 
 
-def warning(msg, level=DISP_SHOW, return_def=None, **kwargs):
+def warning(msg, display_level=DISP_SHOW, log_level=logging.WARNING, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = WARNING
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -218,12 +199,14 @@ def warning(msg, level=DISP_SHOW, return_def=None, **kwargs):
 # password or using incorrect data in a field would generate an err. That is,
 # having an 'err' occur is fully expected. The user simply needs to know that the
 # operation failed.
-def err(msg, level=DISP_SHOW, return_def=None, **kwargs):
+def err(msg, display_level=DISP_SHOW, log_level=logging.ERROR, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -243,12 +226,14 @@ def failure(*args, **kwargs):
 
 #
 # used to return events that shouldn't ever really happen. i.e. a software bug
-def bug(msg, level=DISP_ERROR, return_def=None, **kwargs):
+def bug(msg, display_level=DISP_ALERT, log_level=logging.ERROR, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -261,12 +246,14 @@ def bug(msg, level=DISP_ERROR, return_def=None, **kwargs):
 # that the URL exists at all. So, an outsider accessing it ISNT a bug per se. But it
 # is a serious security warning.
 #
-def security(msg, level=DISP_SECURITY_ALERT, return_def=None, **kwargs):
+def security(msg, display_level=DISP_ALERT, log_level=logging.CRITICAL, return_def=None, **kwargs):
+    if 'level' in kwargs:
+        display_level = kwargs['level']
     fe = FlashEvent()
     fe.message = msg
     fe.event_type = DANGER
-    fe.display_level = level
-    fe.log_level = level
+    fe.display_level = display_level
+    fe.log_level = log_level
     fe.return_def = return_def
     fe.return_def_parms = kwargs
     return fe
@@ -288,8 +275,8 @@ def is_good(flash_event, noneOkay=False):
     if is_flashEvent(flash_event):
         if flash_event.event_type == DANGER:
             return False
-        if flash_event.display_level in [DISP_ERROR, DISP_SECURITY_ALERT]:
-            return False
+        # if flash_event.display_level in [DISP_ALERT]:
+        #     return False
         return True
     if (flash_event is None) and not noneOkay:
         return False
@@ -300,17 +287,31 @@ def is_bad(flash_event, noneOkay=False):
     return not is_good(flash_event, noneOkay=noneOkay)
 
 
-def flash(message, t=None, loglevel=None):
-    ''' use 'flash' when you want the msg displayed to user when level is greater than 'DISP_LOG'. '''
+def flash(message, t=None, display_level=None, log_level=None):
+    '''
+    use 'flash' when you want the msg displayed to user.
+    Either pass in a msg.<event> class instance.
+    Or plass in a text message with parameters. The second parameter can be
+    a string representations of the category.
+    '''
     if not is_flashEvent(message):
-        message = msg(message)
-        if t in MSG_CAT_MAP:
-            message.event_type = MSG_CAT_MAP[t]
-        if loglevel:
-            message.import_logger_level(loglevel)
-    if message.display_level != DISP_LOG:
+        message = msg(str(message))
+    #
+    # adjust as needed
+    #
+    if display_level:
+        message.display_level = display_level
+    if log_level:
+        message.log_level = log_level
+    if t in MSG_CAT_MAP:
+        message.event_type = MSG_CAT_MAP[t]
+    #
+    # actually display/log
+    #
+    if message.display_level != DISP_NONE:
         flask.flash(message.message, MSG_FLASK_CAT[message.event_type])
     message.log()
+    #
     return
 
 

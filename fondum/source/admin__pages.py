@@ -7,9 +7,11 @@ from app import g
 import msg
 from page import Page, PageForm, PageTable, DisplayPictureField, DisplayTextField
 import admin__database as database
+import admin__models as models
 from s3 import s3_upload
 import datetime
 from decimal import Decimal
+from fondum_utility import copy_fields
 
 
 # /admin/main
@@ -305,3 +307,44 @@ class ProductDelete__pkey(Page):
             product = database.read_product(pkey)
             if product:
                 self.pull_data(product)
+
+
+# /admin/logs
+class Logs(Page):
+
+    # login_required = True
+    # admin_required = True
+
+    default_text = """
+= Last 50 Log Entries
+    """
+
+    class EventLogs(PageTable):
+        key_name = "logs"
+        table_name = "Event Logger"
+
+        class LogRow(PageForm):
+            _import_fields = models.Logs
+            _field_order = [
+                "dt_created",
+                "s_event_type",
+                "s_log_level", 
+                "s_display_level",
+                "s_instance",
+                "s_src",
+                "s_message",
+                "s_logger_string",
+            ]
+
+        def process_table(self, **kwargs):
+            log_list = database.readlist_log(qty=50)
+            self.set_header(self.LogRow())
+            for log in log_list:
+                r = self.LogRow()
+                copy_fields(src=log, dest=r)
+                self.rows.append(r)
+            return msg.success("Event Logs.")
+
+    table_order = [
+        EventLogs,
+    ]

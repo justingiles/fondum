@@ -1,6 +1,7 @@
 from flask_mongoengine import MongoEngine
 import datetime
 import flask
+import logging
 
 db = MongoEngine()
 
@@ -136,33 +137,29 @@ class Product(db.Document):
 
 FLASK_CAT_LIST = ["message", "success", "info", "warning", "danger"]    
 
-LOG_DEBUG = 0             # See Python "logging" for general interpretation
-LOG_INFO = 1              # as a general rule, these levels match up with the PRESENTATION display_levels below
-LOG_WARNING = 2
-LOG_ERROR = 3
-LOG_CRITICAL = 4
-
-LOG_LEVEL_MAP = [10, 20, 30, 40, 50]
 LOG_DESCRIPTION = {
-    LOG_DEBUG: "DEBUG",
-    LOG_INFO: "LOG_WARNING",
-    LOG_WARNING: "WARNING",
-    LOG_ERROR: "ERROR",
-    LOG_CRITICAL: "CRITICAL"
+    logging.DEBUG: "DEBUG",
+    logging.INFO: "INFO",
+    logging.WARNING: "WARNING",
+    logging.ERROR: "ERROR",
+    logging.CRITICAL: "CRITICAL"
 }
 
-DISP_LOG = 0              # send to logs, if logs are stored, but not to end-user
+def map_log_to_cat(log_level):
+    if log_level < logging.WARNING:
+        return "message"
+    if log_level < logging.ERROR:
+        return "warning"
+    return "danger"
+
+DISP_NONE = 0             # don't display at all
 DISP_SHOW = 1             # show to end-user; this is the default level; progress continues
-DISP_WARNING = 2          # show to end-user; same as "display" but slightly more aggressive; but progress still continues
-DISP_ERROR = 3            # this is an error that should be shown to user; a problem needs to be fixed
-DISP_SECURITY_ALERT = 4   # security exception! this type of error should never normally happen
+DISP_ALERT = 2          # show to end-user; same as "display" but slightly more aggressive
 
 DISP_DESCRIPTION = {
-    DISP_LOG: "LOG",
+    DISP_NONE: "NONE",
     DISP_SHOW: "SHOW",
-    DISP_WARNING: "WARNING",
-    DISP_ERROR: "ERROR",
-    DISP_SECURITY_ALERT: "SECURITY_ALERT",
+    DISP_ALERT: "WARNING",
 }
 
 class Logs(db.Document):
@@ -180,22 +177,8 @@ class Logs(db.Document):
     s_return_def_parms = db.StringField()
     s_logger_string = db.StringField()
  
-    def interpret_pythonLoggingLevel(self, logging_level):
-        level = 0
-        category = "info"
-        for n in range(5):
-            if logging_level>=LOG_LEVEL_MAP[n]:
-                level = n
-        if level in [LOG_DEBUG, LOG_INFO]:
-            category = "info"
-        elif level in [LOG_WARNING]:
-            category = "warning"
-        elif level in [LOG_ERROR, LOG_CRITICAL]:
-            category = "danger"
-        return (level, category)
-
     def pull_from_FlashEvent(self, fe):
-        self.s_domain = flask.current_app.config.get("domain", "fondum")
+        self.s_domain = flask.current_app.config.get("DOMAIN", "fondum")
         self.s_message = fe.message
         self.s_event_type = FLASK_CAT_LIST[fe.event_type]
         self.n_display_level = fe.display_level
@@ -207,13 +190,14 @@ class Logs(db.Document):
         self.s_src = "flash"
 
     def pull_from_logger(self, record):
-        self.s_domain = flask.current_app.config.get("domain", "fondum")
+        self.s_domain = flask.current_app.config.get("DOMAIN", "fondum")
         self.s_message = record.message
         self.s_logger_string = record.formatted_message
-        (self.n_log_level, self.n_event_type) = self.interpret_pythonLoggingLevel(record.levelno)
+        self.s_event_type = map_log_to_cat(record.levelno)
+        self.n_log_level = record.levelno
         self.s_log_level = LOG_DESCRIPTION[self.n_log_level]
-        self.n_display_level = DISP_LOG   # records pulled from logger are never shown to user
-        self.s_display_level = DISP_DESCRIPTION[DISP_LOG]
+        self.n_display_level = DISP_NONE  # records directly pulled from logger are never shown to user
+        self.s_display_level = DISP_DESCRIPTION[DISP_NONE]
         self.s_return_def_parms = "{}"
         self.s_src = "logger"
 

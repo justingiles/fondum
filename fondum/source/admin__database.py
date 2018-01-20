@@ -1,11 +1,13 @@
 import admin__models as models
 import mongoengine as db
-from app import bcrypt, logger
+from app import bcrypt, app
 from decimal import Decimal
 
 from PLOD import PLOD
 
 import msg
+
+logger = app.logger
 
 # TODO: remove PLOD since this is generic
 
@@ -355,12 +357,15 @@ def create_log_viaLoggingRecord(record):
     return
 
 def create_log_viaFlashEvent(fe):
-    if fe.logger_level() < logger.level:
+    if fe.log_level < logger.level:
         return
     log = models.Logs()
     log.pull_from_FlashEvent(fe)
     log.save()
     return
 
+def readlist_log(qty=10):
+    ll = models.Logs.objects.order_by('-dt_created')[:qty]
+    return ll
 
 # eof

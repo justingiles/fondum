@@ -1,11 +1,20 @@
 from baseconfig import BaseConfig
+import logging
 
 
 class Config(BaseConfig):
     SECRET_KEY = 'put secret key here'
     HOST = '0.0.0.0'
     PORT = 8000
+    DOMAIN = "{{DOMAIN}}"
     AUTH_EMAILS = "EMAIL1 EMAIL2"  # by default, used by 'determine_admin_flag' in 'custom/login_handler.py' as a space-seperated list
+    #
+    # Logging details
+    #
+    HAS_LOGGING = True
+    # details for LOGGING_FORMAT at https://docs.python.org/2/library/logging.html#logrecord-attributes
+    LOGGING_FORMAT = "%(asctime)s - %(levelname)s - %(filename)s,%(lineno)d - %(message)s"
+    LOGGING_LEVEL = logging.WARNING
     #
     # MongoDB details
     #
