@@ -18,7 +18,7 @@ import fondum_utility
 class About(Page):
 
     default_text = """
-==About def.test
+==About {{DOMAIN}}
 """
 
 
