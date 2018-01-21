@@ -69,7 +69,7 @@ def create_project(args):
     }
     file_dict_swapper("{}/settings/docker.json".format(root_dir), myvars)
     file_dict_swapper("{}/settings/general.json".format(root_dir), myvars)
-    file_dict_swapper("{}/custom/main__pages.py".format(root_dir), myvars)
+    file_dict_swapper("{}/custom/example__pages.py".format(root_dir), myvars)
     file_dict_swapper("{}/settings/flask-settings.py".format(root_dir), myvars)
     #
     # generate web site
