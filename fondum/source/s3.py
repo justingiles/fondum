@@ -79,6 +79,9 @@ def static_proxy(path, bucket=None):
     try:
         key.open_read()
         headers = dict(key.resp.getheaders())
-        return flask.Response(key, headers=headers)
+        r = flask.Response(key, headers=headers)
+        r.cache_control.max_age = 60*60*24*28  # 28 days of cache
+        r.cache_control.public = True
+        return r
     except boto.exception.S3ResponseError as e:
         return flask.Response(e.body, status=e.status, headers=key.resp.getheaders())
