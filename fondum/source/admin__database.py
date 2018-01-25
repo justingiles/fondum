@@ -2,6 +2,7 @@ import admin__models as models
 import mongoengine as db
 from app import bcrypt, app
 from decimal import Decimal
+import datetime
 
 from PLOD import PLOD
 
@@ -75,6 +76,7 @@ def read_user_byOAuth(email, authid, source):
 
 
 def _save_article(article):
+    article.dt_last_update = datetime.datetime.now()
     article.save()
     update_articleList_universal()
     return
@@ -99,6 +101,7 @@ def create_article(key, wtf):
     article.s_key = key
     article.s_title = wtf.s_title.data
     article.s_creole_text = wtf.s_creole_text.data
+    article.dt_last_update = datetime.datetime.now()
 
     article.tf_blog = wtf.blog.tf_blog.data
     article.s_blogger_name = wtf.blog.s_blogger_name.data
@@ -119,6 +122,10 @@ def read_article_byKey(key):
     except db.DoesNotExist:
         a = None
     return a
+
+def readlist_article_all():
+    al = models.Article.objects
+    return al
 
 
 def update_article(article, wtf):

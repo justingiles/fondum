@@ -194,17 +194,27 @@ def compile_project(args):
             class_name = string_between(class_line, "class ", "(Page")
             if class_name is None:
                 continue
-            class_name = class_name.strip()
-            class_parts = class_name.split("__")
-            page_name = convert_camel_case(class_parts[0])
-            page_parms = []
-            if len(class_parts) > 1:
-                page_parms = class_parts[1:]
+            if '#%OVERRIDE_URL=' in class_line:
+                page_name = class_line.split('#%OVERRIDE_URL=', 1)[1]
+                page_name = page_name.strip()
+                page_parms = []  # we don't currently support parms on an override
                 parms_text = "\{{}}".format(",".join(["'{}': '{}'".format(p, p) for p in page_parms]))
-            def_name = "page_{}_{}".format(group_name, page_name.replace("-", "_"))
-            key = "{}/{}".format(group_name, page_name)
-            bracket_parms = ["<{}>".format(parm) for parm in page_parms]
-            url = url_smash([group_name, page_name], bracket_parms)
+                def_name = "page_{}_{}".format(group_name, class_name)
+                key = "{}/{}".format(group_name, class_name)
+                bracket_parms = []
+                url = page_name
+            else:
+                class_name = class_name.strip()
+                class_parts = class_name.split("__")
+                page_name = convert_camel_case(class_parts[0])            
+                page_parms = []
+                if len(class_parts) > 1:
+                    page_parms = class_parts[1:]
+                parms_text = "\{{}}".format(",".join(["'{}': '{}'".format(p, p) for p in page_parms]))
+                def_name = "page_{}_{}".format(group_name, page_name.replace("-", "_"))
+                key = "{}/{}".format(group_name, page_name)
+                bracket_parms = ["<{}>".format(parm) for parm in page_parms]
+                url = url_smash([group_name, page_name], bracket_parms)
             t = page_parms + ["TABLE_NAME=None"]
             def_parameters = ", ".join(parm for parm in t)
             t = page_parms + ["TABLE_NAME"]

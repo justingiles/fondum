@@ -12,6 +12,7 @@ class BaseConfig(object):
     HOST = '0.0.0.0'
     PORT = 8000
     AUTH_EMAILS = "EMAIL1 EMAIL2"  # by default, used by 'determine_admin_flag' in 'custom/login_handler.py' as a space-seperated list
+    AUTH_DEBUG_AND_ANONYMOUS = False  # clearly, turning this true on production is a VERY BAD IDEA
     #
     # Logging details
     #

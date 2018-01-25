@@ -67,6 +67,7 @@ class Article(db.Document):
     s_key = db.StringField(required=True)  # form of group_name/page_name
     s_title = db.StringField()
     s_creole_text = db.StringField()
+    dt_last_update = db.DateTimeField(required=True, default=datetime.datetime.now)
 
     # BLOG Support:
     tf_blog = db.BooleanField(default=False)

@@ -378,3 +378,12 @@ class TextAreaField(w.TextAreaField):
         self.href = href
         self.display_only = display_only
 
+#
+#
+#
+
+class FormField(w.FormField):
+    def __init__(self, formclass, label=None, validators=None, href=None, display_only=False, **kwargs):
+        super(FormField, self).__init__(formclass, label, validators, **kwargs)
+        self.href = None
+        self.display_only = display_only
